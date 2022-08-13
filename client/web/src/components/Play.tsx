@@ -44,7 +44,8 @@ export default class Play
 								client={client}
 								cards={playerState.playedCards.map(
 									playedCard => playedCard.card,
-								)}/>
+								)}
+								sort={true}/>
 						</div>
 					)
 				}

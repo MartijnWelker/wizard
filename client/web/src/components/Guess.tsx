@@ -37,6 +37,7 @@ export default class Guess
 					Your cards:
 					<Cards
 						active={false}
+						sort={true}
 						cards={playerState.hand}
 						client={client}/>
 
@@ -65,7 +66,8 @@ export default class Guess
 				<Cards
 					active={false}
 					cards={playerState.hand}
-					client={client}/>
+					client={client}
+					sort={true}/>
 
 				<p>
 					{activePlayerInfo.nickname} is guessing

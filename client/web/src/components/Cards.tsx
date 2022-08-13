@@ -1,16 +1,24 @@
 import React from 'react';
-import { Card as CardType } from '../../../../api/types';
+import { Card as CardType, Color, SpecialType } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
 import Card from './Card';
 
 interface ICardsProps {
 	cards: CardType[],
 	active: boolean,
-	client: HathoraConnection
+	client: HathoraConnection,
+	sort?: boolean
 }
 
 interface ICardsState {
 }
+
+const cardOrder = [
+	Color.RED,
+	Color.GREEN,
+	Color.BLUE,
+	Color.YELLOW,
+];
 
 export default class Cards
 	extends React.Component<ICardsProps, ICardsState> {
@@ -19,7 +27,57 @@ export default class Cards
 		const {
 			cards,
 			active,
+			sort,
 		} = this.props;
+
+		if (sort === true) {
+			cards.sort(
+				(
+					cardA,
+					cardB,
+				) => {
+					console.log(
+						`comparing cards`,
+						cardA,
+						cardB,
+					);
+
+					if (
+						(
+							cardA.specialType !== undefined
+							&& cardA.specialType === cardB.specialType
+						)
+						|| (
+							cardA.color !== undefined
+							&& cardA.color === cardB.color
+						)
+					) {
+						return cardA.value - cardB.value;
+					}
+
+					if (cardA.specialType === SpecialType.JOKER) {
+						return -1;
+					}
+
+					if (cardB.specialType === SpecialType.JOKER) {
+						return 1;
+					}
+
+					if (cardA.specialType === SpecialType.WIZARD) {
+						return 1;
+					}
+
+					if (cardB.specialType === SpecialType.WIZARD) {
+						return -1;
+					}
+
+					const aOrder = cardOrder[cardA.color!];
+					const bOrder = cardOrder[cardB.color!];
+
+					return bOrder - aOrder;
+				},
+			);
+		}
 
 		return (
 			<ul
