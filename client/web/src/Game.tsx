@@ -95,17 +95,31 @@ function Game (props: IGameProps) {
 							playerState.gameState === GameState.GUESS
 							|| playerState.gameState === GameState.PLAY
 						) && (
-							(
-								playerState.trump
-								&& (
-									<>
-										<span>Trump cards (only last one counts)</span>
-										<Cards
-											active={false}
-											client={hathora}
-											cards={playerState.trump}/>
-									</>
-								)
+							<>
+								<div>
+									Round: {playerState.round}/{getTotalRounds(playerState.players.length)}
+								</div>
+								<div>
+									Total guessed: {getTotalGuessed(playerState.guesses)}/{playerState.round}
+								</div>
+							</>
+						)
+					}
+
+					{
+						(
+							playerState.gameState === GameState.GUESS
+							|| playerState.gameState === GameState.PLAY
+						) && (
+							playerState.trump
+							&& (
+								<>
+									<span>Trump cards (only last one counts)</span>
+									<Cards
+										active={false}
+										client={hathora}
+										cards={playerState.trump}/>
+								</>
 							)
 						)
 					}
@@ -185,6 +199,24 @@ async function initConnection (
 		);
 		setHathora(await connection);
 	}
+}
+
+function getTotalGuessed (
+	guesses: PlayerState['guesses'],
+): number {
+	return guesses.reduce(
+		(
+			total,
+			guess,
+		) => total + guess.guess,
+		0,
+	);
+}
+
+function getTotalRounds (
+	amountPlayers: number,
+): number {
+	return 60 / amountPlayers;
 }
 
 export default Game;

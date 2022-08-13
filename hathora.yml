@@ -45,6 +45,7 @@ types:
     guesses: Guesses[]
     winsThisRound: RoundPoints[]
     nickname: Nickname
+    round: int
 
 methods:
   joinGame:

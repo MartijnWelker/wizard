@@ -477,6 +477,7 @@ export class Impl
 			gameState: state.gameState,
 			totalPoints,
 			pointsPerRound,
+			round: state.round,
 			guesses: Object
 				.entries(
 					state.guesses,
