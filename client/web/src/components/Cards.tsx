@@ -22,9 +22,14 @@ export default class Cards
 		} = this.props;
 
 		return (
-			<ul>
+			<ul
+				style={{
+					listStyle: 'none',
+					display: 'flex',
+					gap: '8px',
+				}}>
 				{cards.map(
-					card => <li>
+					card => <li key={this.getCardHash(card)}>
 						<Card card={card}/>
 
 						{active && (
@@ -51,5 +56,9 @@ export default class Cards
 				}
 			});
 	};
+
+	private getCardHash (card: CardType): string {
+		return `${card.specialType}-${card.color}- ${card.value}`;
+	}
 
 }

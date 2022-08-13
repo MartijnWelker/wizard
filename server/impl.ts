@@ -230,7 +230,7 @@ export class Impl
 
 		if (userId !== handUserId) {
 			return Response.error(
-				`It's not your turn!`,
+				`It's not your turn! Your ID ${userId}, turn ID ${handUserId}`,
 			);
 		}
 
@@ -495,9 +495,7 @@ export class Impl
 				)
 				.map(
 					win => ({
-						nickname: state.nicknames.get(
-							win[0],
-						)!,
+						nickname: win[0],
 						points: win[1],
 					}),
 				),
@@ -615,9 +613,12 @@ export class Impl
 
 		for (const hand of state.hands) {
 			const userId = hand.userId as UserId;
+			const nickname = state.nicknames.get(
+				userId,
+			)!;
 
 			const guessed = state.guesses[userId];
-			const won = state.winsThisRound[userId] ?? 0;
+			const won = state.winsThisRound[nickname] ?? 0;
 
 			if (guessed === won) {
 				const pointsDelta = 20 + (guessed * 10);

@@ -26,12 +26,6 @@ export default class Play
 
 		return (
 			<>
-				{activePlayerInfo.id !== currentPlayerInfo.id && (
-					<p>
-						{activePlayerInfo.nickname} is playing
-					</p>
-				)}
-
 				<div>
 					Own cards:
 					<Cards
@@ -54,6 +48,12 @@ export default class Play
 						</div>
 					)
 				}
+
+				{activePlayerInfo.id !== currentPlayerInfo.id && (
+					<p>
+						{activePlayerInfo.nickname} is playing
+					</p>
+				)}
 			</>
 		);
 	}

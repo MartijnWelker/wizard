@@ -34,6 +34,12 @@ export default class Guess
 		if (playerState.turn === currentPlayerInfo.id) {
 			return (
 				<>
+					Your cards:
+					<Cards
+						active={false}
+						cards={playerState.hand}
+						client={client}/>
+
 					<label htmlFor="guessInput">Guess:</label>
 					<input
 						type="number"
@@ -49,25 +55,21 @@ export default class Guess
 					>
 						Guess
 					</button>
-
-					<Cards
-						active={false}
-						cards={playerState.hand}
-						client={client}/>
 				</>
 			);
 		}
 
 		return (
 			<>
-				<p>
-					{activePlayerInfo.nickname} is guessing
-				</p>
-
+				Your cards:
 				<Cards
 					active={false}
 					cards={playerState.hand}
 					client={client}/>
+
+				<p>
+					{activePlayerInfo.nickname} is guessing
+				</p>
 			</>
 		);
 	}
