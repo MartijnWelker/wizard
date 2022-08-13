@@ -1,4 +1,5 @@
 types:
+  Nickname: string
   GameState:
     - LOBBY
     - PLAY
@@ -18,17 +19,18 @@ types:
     specialType: SpecialType?
   Player:
     id: UserId
+    nickname: Nickname
   RoundPoints:
-    id: UserId
+    nickname: Nickname
     points: int
   TotalPoints:
-    id: UserId
+    nickname: Nickname
     points: int
   PlayedCard:
-    id: UserId
+    nickname: Nickname
     card: Card
   Guesses:
-    id: UserId
+    nickname: Nickname
     guess: int
   PlayerState:
     hand: Card[]
@@ -42,9 +44,11 @@ types:
     pointsPerRound: RoundPoints[][]
     guesses: Guesses[]
     winsThisRound: RoundPoints[]
+    nickname: Nickname
 
 methods:
   joinGame:
+    nickname: Nickname
   startGame:
   playCard:
     card: Card

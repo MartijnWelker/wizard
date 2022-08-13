@@ -1,5 +1,5 @@
 import { Response } from '../api/base';
-import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, PlayedCard, PlayerState, RoundPoints, SpecialType, TotalPoints, UserId } from '../api/types';
+import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, SpecialType, TotalPoints, UserId } from '../api/types';
 import { Context, Methods } from './.hathora/methods';
 
 type InternalState = {
@@ -14,10 +14,11 @@ type InternalState = {
 	round: number,
 	trump: Card[],
 	playedCards: PlayedCard[],
-	pointsPerRound: Record<UserId, number>[],
-	totalPoints: Record<UserId, number>,
-	winsThisRound: Record<UserId, number>,
+	pointsPerRound: Record<Nickname, number>[],
+	totalPoints: Record<Nickname, number>,
+	winsThisRound: Record<Nickname, number>,
 	started: boolean,
+	nicknames: Map<UserId, Nickname>;
 };
 
 export class Impl
@@ -73,10 +74,11 @@ export class Impl
 			pointsPerRound: [],
 			totalPoints: {},
 			guesses: {},
-			gameState: GameState.GUESS,
+			gameState: GameState.LOBBY,
 			winsThisRound: {},
 			started: false,
 			trump: [],
+			nicknames: new Map<UserId, Nickname>(),
 		};
 	}
 
@@ -97,6 +99,11 @@ export class Impl
 				'A maximum of 6 players is allowed',
 			);
 		}
+
+		state.nicknames.set(
+			userId,
+			request.nickname,
+		);
 
 		state.hands.push({
 			userId,
@@ -126,9 +133,6 @@ export class Impl
 
 		// Played left of the dealer starts first
 		state.turnIdx = 1;
-
-		// Skip to last round
-		state.round = Impl.createDeck().length / state.hands.length;
 
 		this.prepareDeck(
 			state,
@@ -296,7 +300,9 @@ export class Impl
 
 		state.playedCards.push(
 			{
-				id: userId,
+				nickname: state.nicknames.get(
+					userId,
+				)!,
 				card: request.card,
 			},
 		);
@@ -422,7 +428,9 @@ export class Impl
 			for (const userId in pointsInRound) {
 				res.push(
 					{
-						id: userId,
+						nickname: state.nicknames.get(
+							userId,
+						)!,
 						points: pointsInRound[userId] ?? 0,
 					},
 				);
@@ -436,7 +444,9 @@ export class Impl
 		for (const userId in state.totalPoints) {
 			totalPoints.push(
 				{
-					id: userId,
+					nickname: state.nicknames.get(
+						userId,
+					)!,
 					points: state.totalPoints[userId] ?? 0,
 				},
 			);
@@ -452,11 +462,13 @@ export class Impl
 			players: state.hands.map(
 				hand => ({
 					id: hand.userId,
+					nickname: state.nicknames.get(
+						hand.userId,
+					) ?? 'No nickname',
 				}),
 			),
 			// Who's turn it is
 			turn: state.hands[state.turnIdx]?.userId,
-			// todo If there's a winner
 			winner: this.getWinners(
 				state,
 			),
@@ -471,7 +483,9 @@ export class Impl
 				)
 				.map(
 					guess => ({
-						id: guess[0],
+						nickname: state.nicknames.get(
+							guess[0],
+						)!,
 						guess: guess[1],
 					}),
 				),
@@ -481,16 +495,21 @@ export class Impl
 				)
 				.map(
 					win => ({
-						id: win[0],
+						nickname: state.nicknames.get(
+							win[0],
+						)!,
 						points: win[1],
 					}),
 				),
+			nickname: state.nicknames.get(
+				userId,
+			) ?? 'No nickname',
 		};
 	}
 
 	private getWinners (
 		state: InternalState,
-	): UserId[] | undefined {
+	): string[] | undefined {
 		if (state.gameState !== GameState.WINNER) {
 			return undefined;
 		}
@@ -515,7 +534,9 @@ export class Impl
 		}
 
 		return highestPoints.map(
-			obj => obj.id,
+			obj => state.nicknames.get(
+				obj.id,
+			)!,
 		);
 	}
 
@@ -666,7 +687,7 @@ export class Impl
 
 				if (playedCard.card.specialType === SpecialType.JOKER) {
 					console.log(
-						`Card ${formattedCard} played by ${playedCard.id} is a Joker, skipping`,
+						`Card ${formattedCard} played by ${playedCard.nickname} is a Joker, skipping`,
 					);
 
 					continue;
@@ -674,7 +695,7 @@ export class Impl
 
 				if (playedCard.card.specialType === SpecialType.WIZARD) {
 					console.log(
-						`Card ${formattedCard} played by ${playedCard.id} is a Wizard, breaking out`,
+						`Card ${formattedCard} played by ${playedCard.nickname} is a Wizard, breaking out`,
 					);
 
 					highestPlayedCard = playedCard;
@@ -712,21 +733,21 @@ export class Impl
 			}
 		}
 
-		state.winsThisRound[highestPlayedCard.id] ??= 0;
-		state.winsThisRound[highestPlayedCard.id] += 1;
+		state.winsThisRound[highestPlayedCard.nickname] ??= 0;
+		state.winsThisRound[highestPlayedCard.nickname] += 1;
 
 		const formattedCard = this.formatCard(
 			highestPlayedCard.card,
 		);
 
-		const winsByUser = state.winsThisRound[highestPlayedCard.id];
+		const winsByUser = state.winsThisRound[highestPlayedCard.nickname];
 
 		console.log(
-			`The highest played card was ${formattedCard} by user ${highestPlayedCard.id}. He now has ${winsByUser} wins`,
+			`The highest played card was ${formattedCard} by user ${highestPlayedCard.nickname}. He now has ${winsByUser} wins`,
 		);
 
 		const winPlayerIndex = state.hands.findIndex(
-			hand => hand.userId === highestPlayedCard.id,
+			hand => state.nicknames.get(hand.userId)! === highestPlayedCard.nickname,
 		) ?? 0;
 
 		state.turnIdx = winPlayerIndex;
