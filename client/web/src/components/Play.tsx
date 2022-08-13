@@ -31,7 +31,8 @@ export default class Play
 					<Cards
 						active={playerState.turn === currentPlayerInfo.id}
 						cards={playerState.hand}
-						client={client}/>
+						client={client}
+						sort={true}/>
 				</div>
 
 				{

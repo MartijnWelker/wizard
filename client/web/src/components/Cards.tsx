@@ -36,12 +36,6 @@ export default class Cards
 					cardA,
 					cardB,
 				) => {
-					console.log(
-						`comparing cards`,
-						cardA,
-						cardB,
-					);
-
 					if (
 						(
 							cardA.specialType !== undefined
