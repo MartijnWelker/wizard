@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card as CardType, Color, SpecialType } from '../../../../api/types';
+import './card.css';
 
 interface ICardProps {
 	card: CardType;
@@ -9,39 +10,15 @@ interface ICardState {
 }
 
 const colors = {
-	[Color.RED]: {
-		background: 'red',
-		border: 'darkred',
-		color: 'white',
-	},
-	[Color.GREEN]: {
-		background: 'green',
-		border: 'darkgreen',
-		color: 'white',
-	},
-	[Color.BLUE]: {
-		background: 'blue',
-		border: 'darkblue',
-		color: 'white',
-	},
-	[Color.YELLOW]: {
-		background: 'yellow',
-		border: 'orange',
-		color: 'black',
-	},
+	[Color.RED]: '#e16c6c',
+	[Color.GREEN]: '#70bd56',
+	[Color.BLUE]: '#6c91d9',
+	[Color.YELLOW]: '#fcda49',
 };
 
 const specialColors = {
-	[SpecialType.WIZARD]: {
-		background: 'white',
-		border: 'black',
-		color: 'black',
-	},
-	[SpecialType.JOKER]: {
-		background: 'white',
-		border: 'black',
-		color: 'black',
-	},
+	[SpecialType.WIZARD]: 'black',
+	[SpecialType.JOKER]: 'black',
 };
 
 export default class Card
@@ -52,33 +29,25 @@ export default class Card
 			card,
 		} = this.props;
 
-		let colorObj;
+		let backgroundColor;
 
 		if (card.specialType !== undefined) {
-			colorObj = specialColors[card.specialType];
+			backgroundColor = specialColors[card.specialType];
 		} else {
-			colorObj = colors[card.color!];
+			backgroundColor = colors[card.color!];
 		}
 
 		return (
-			<span
-				style={{
-					borderRadius: '3px',
-					width: '50px',
-					height: '100px',
-					background: colorObj.background,
-					borderWidth: '5px',
-					borderStyle: 'solid',
-					borderColor: colorObj.border,
-					fontSize: '30px',
-					color: colorObj.color,
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}>
+			<div className={'card'}>
+				<div
+					className={'card__inner'}
+					style={{
+						background: backgroundColor,
+					}}>
 
-				{this.getCardValue(card)}
-			</span>
+					{this.getCardValue(card)}
+				</div>
+			</div>
 		);
 	}
 

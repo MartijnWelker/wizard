@@ -2,6 +2,7 @@ import React from 'react';
 import { Card as CardType, Color, SpecialType } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
 import Card from './Card';
+import './cards.css';
 
 interface ICardsProps {
 	cards: CardType[],
@@ -82,18 +83,14 @@ export default class Cards
 				}}>
 				{cards.map(
 					card => <li key={this.getCardHash(card)}>
-						<Card card={card}/>
+						<button
+							className={`cards__card-button ${active ? 'cards__card-button--active' : ''}`}
+							onClick={() => {
+								this.playCard(card);
+							}}>
 
-						{active && (
-							<button
-								onClick={() => {
-									this.playCard(card);
-								}}
-								style={{marginLeft: '8px'}}>
-
-								play
-							</button>
-						)}
+							<Card card={card}/>
+						</button>
 					</li>,
 				)}
 			</ul>
@@ -101,6 +98,10 @@ export default class Cards
 	}
 
 	private playCard = (card: CardType) => {
+		if (!this.props.active) {
+			return;
+		}
+
 		this.props.client.playCard({card})
 			.then((result) => {
 				if (result.type === 'error') {

@@ -28,6 +28,7 @@ export default class Play
 			<>
 				<div>
 					Own cards:
+
 					<Cards
 						active={playerState.turn === currentPlayerInfo.id}
 						cards={playerState.hand}
@@ -40,6 +41,7 @@ export default class Play
 					&& (
 						<div>
 							Played cards:
+
 							<Cards
 								active={false}
 								client={client}
