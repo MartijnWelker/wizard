@@ -1,0 +1,58 @@
+types:
+  GameState:
+    - PLAY
+    - GUESS
+    - WINNER
+  Color:
+    - RED
+    - BLUE
+    - GREEN
+    - YELLOW
+  SpecialType:
+    - WIZARD
+    - JOKER
+  Card:
+    value: int
+    color: Color?
+    specialType: SpecialType?
+  Player:
+    id: UserId
+  RoundPoints:
+    id: UserId
+    points: int
+  TotalPoints:
+    id: UserId
+    points: int
+  PlayedCard:
+    id: UserId
+    card: Card
+  Guesses:
+    id: UserId
+    guess: int
+  PlayerState:
+    hand: Card[]
+    players: Player[]
+    turn: UserId?
+    playedCards: PlayedCard[]
+    trump: Card[]
+    winner: UserId[]?
+    gameState: GameState
+    totalPoints: TotalPoints[]
+    pointsPerRound: RoundPoints[][]
+    guesses: Guesses[]
+    winsThisRound: RoundPoints[]
+
+methods:
+  joinGame:
+  startGame:
+  playCard:
+    card: Card
+  submitGuess:
+    count: int
+  autoPlay:
+
+auth:
+  anonymous: { }
+
+userState: PlayerState
+error: string
