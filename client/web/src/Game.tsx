@@ -111,16 +111,23 @@ function Game (props: IGameProps) {
 							playerState.gameState === GameState.GUESS
 							|| playerState.gameState === GameState.PLAY
 						) && (
-							playerState.trump
-							&& (
-								<>
-									<span>Trump cards (only last one counts)</span>
-									<Cards
-										active={false}
-										client={hathora}
-										cards={playerState.trump}/>
-								</>
-							)
+							playerState.trump.length > 0
+								? (
+									<>
+										<div>
+											Trump cards (only last one counts)
+										</div>
+										<Cards
+											active={false}
+											client={hathora}
+											cards={playerState.trump}/>
+									</>
+								)
+								: (
+									<div>
+										No trump card this round
+									</div>
+								)
 						)
 					}
 
