@@ -7,6 +7,7 @@ import Cards from './components/Cards';
 import Guess from './components/Guess';
 import Lobby from './components/Lobby';
 import Play from './components/Play';
+import ScoreBoard from './components/Scoreboard';
 import Winner from './components/Winner';
 import './game.css';
 
@@ -129,6 +130,13 @@ function Game (props: IGameProps) {
 							playerState={playerState}
 							client={hathora}/>
 					)}
+
+					{
+						playerState.gameState !== GameState.LOBBY && (
+							<ScoreBoard
+								playerState={playerState}/>
+						)
+					}
 				</div>
 			</>
 		);
