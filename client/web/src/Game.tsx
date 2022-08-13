@@ -1,8 +1,13 @@
 import { History } from 'history';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { PlayerState } from '../../../api/types';
+import { GameState, PlayerState } from '../../../api/types';
 import { HathoraClient, HathoraConnection } from '../../.hathora/client';
+import Cards from './components/Cards';
+import Guess from './components/Guess';
+import Lobby from './components/Lobby';
+import Play from './components/Play';
+import Winner from './components/Winner';
 import './game.css';
 
 const client = new HathoraClient();
@@ -38,9 +43,29 @@ function Game (props: IGameProps) {
 		[path],
 	);
 
-	console.log(playerState);
+	console.log(
+		playerState,
+	);
 
 	if (playerState && hathora && !is404 && path !== '/game') {
+		const currentPlayerInfo = playerState.players.find(
+			player => player.nickname === playerState.nickname,
+		)!;
+
+		const activePlayerInfo = playerState.players.find(
+			player => player.id === playerState.turn,
+		)!;
+
+		console.log(
+			'Current player',
+			currentPlayerInfo,
+		);
+
+		console.log(
+			'Active player',
+			activePlayerInfo,
+		);
+
 		return (
 			<>
 				<div
@@ -57,15 +82,53 @@ function Game (props: IGameProps) {
 					</div>
 				</div>
 				<div className={'tussie--game-container'}>
+					{playerState.gameState === GameState.LOBBY && (
+						<Lobby
+							isCreator={true}
+							playerState={playerState}
+							client={hathora}/>
+					)}
 
-					<div style={{marginTop: 32}}>
-						<button
-							className="tussie--button-small"
-							onClick={() => history.push('/')}
-							disabled={path === '/'}>
-							Return Home
-						</button>
-					</div>
+					{
+						(
+							playerState.gameState === GameState.GUESS
+							|| playerState.gameState === GameState.PLAY
+						) && (
+							(
+								playerState.trump
+								&& (
+									<>
+										<span>Trump cards (only last one counts)</span>
+										<Cards
+											active={false}
+											client={hathora}
+											cards={playerState.trump}/>
+									</>
+								)
+							)
+						)
+					}
+
+					{playerState.gameState === GameState.GUESS && (
+						<Guess
+							playerState={playerState}
+							currentPlayerInfo={currentPlayerInfo}
+							activePlayerInfo={activePlayerInfo}
+							client={hathora}/>
+					)}
+					{playerState.gameState === GameState.PLAY && (
+						<Play
+							playerState={playerState}
+							currentPlayerInfo={currentPlayerInfo}
+							activePlayerInfo={activePlayerInfo}
+							client={hathora}/>
+					)}
+
+					{playerState.gameState === GameState.WINNER && (
+						<Winner
+							playerState={playerState}
+							client={hathora}/>
+					)}
 				</div>
 			</>
 		);
