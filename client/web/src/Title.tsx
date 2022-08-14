@@ -9,12 +9,12 @@ function Title () {
 	return (
 		<>
 			<div className={'title__title-container'}>
-				<h1>
+				<h1 className="title__title">
 					Wizard
 				</h1>
 			</div>
 			<div className="title__container">
-				<div className="title__new-game-container">
+				<div className="title__new-game-container ui-card">
 					<Link
 						to={{
 							pathname: '/game',
@@ -35,7 +35,7 @@ function Title () {
 					</label>
 				</div>
 
-				<div className="title__game-joiner-container">
+				<div className="title__game-joiner-container ui-card">
 					<label htmlFor="gameIdInput">
 						Game code:
 					</label>

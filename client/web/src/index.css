@@ -28,7 +28,6 @@ body,
     }
 }
 
-
 html {
     background: rgb(92, 155, 64);
     background: radial-gradient(circle, rgba(92, 155, 64, 1) 0%, rgba(37, 101, 51, 1) 100%);
@@ -87,4 +86,30 @@ html {
 .button:active {
     background-color: #c85000;
     box-shadow: rgba(0, 0, 0, .06) 0 2px 4px;
+}
+
+input {
+    background: none;
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+input:active,
+input:focus,
+input:focus-visible {
+    border-left: none;
+    border-top: none;
+    border-right: none;
+    outline: none;
+}
+
+.ui-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+    min-height: 150px;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 16px;
+    background: #fff
 }

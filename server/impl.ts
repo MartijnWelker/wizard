@@ -389,6 +389,12 @@ export class Impl
 				state,
 			);
 
+			if (((state.round + 1) * state.hands.length) > Impl.createDeck().length) {
+				state.gameState = GameState.WINNER;
+
+				return Response.ok();
+			}
+
 			console.log(
 				'Starting next round',
 			);
@@ -397,12 +403,6 @@ export class Impl
 			state.round++;
 			// Dealer moves to the next person
 			state.turnIdx = state.round % state.hands.length;
-
-			if (state.round * state.hands.length > Impl.createDeck().length) {
-				state.gameState = GameState.WINNER;
-
-				return Response.ok();
-			}
 
 			console.log(
 				'-------------- NEXT ROUND ----------------',

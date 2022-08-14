@@ -1,0 +1,33 @@
+.lobby {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.lobby__qr {
+    margin: 0 auto;
+}
+
+.lobby__qr-text {
+    text-align: center;
+    color: #000;
+}
+
+.lobby__game-join-button,
+.lobby__game-code-copy-button {
+    margin-top: auto;
+}
+
+.lobby_debug-mode-warning {
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.lobby__game-code-card {
+    margin-top: 32px;
+}
+
+.lobby__join-card,
+.lobby__current-players {
+    margin-top: 16px;
+}

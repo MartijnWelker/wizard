@@ -2,6 +2,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import React, { useState } from 'react';
 import { PlayerState } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
+import './lobby.css';
 
 interface ILobbyProps {
 	isCreator: boolean,
@@ -27,88 +28,107 @@ export default function (
 	);
 
 	return (
-		<div className="Lobby">
+		<div className="lobby">
 			{props.debugMode && (
-				<p>Game is in debug mode!</p>
+				<p className="label lobby_debug-mode-warning">
+					Game is in debug mode!
+				</p>
 			)}
 
-			<QRCodeSVG value={url.href}/>
+			<div className="ui-card">
+				<QRCodeSVG
+					value={url.href}
+					className="lobby__qr"/>
 
-			<h3>Game Code: {getSessionCode(url)}</h3>
-			<span>
+				<p className="lobby__qr-text">
+					Scan to join
+				</p>
+			</div>
+
+			<div className="ui-card lobby__game-code-card">
+				<h3 className="lobby__game-code">
+					Game Code: {getSessionCode(url)}
+				</h3>
+
 				<input
-					className="hive-input-btn-input"
 					type="url"
 					value={url.href}
 					id="urlText"
 					readOnly/>
+
 				<button
-					className="hive-btn hive-input-btn"
+					className="button lobby__game-code-copy-button"
 					onClick={copyUrl}>
+
 					Copy
 				</button>
-			</span>
-			<br/>
+			</div>
 
-			<label htmlFor="nicknameInput">
-				Nickname:
-			</label>
+			<div className="ui-card lobby__join-card">
+				<label htmlFor="nicknameInput">
+					Nickname:
+				</label>
 
-			<input
-				type="text"
-				id="nicknameInput"
-				className="hive-input-btn-input"
-				value={nickname}
-				onChange={(e) => setNickname(e.target.value)}
-			/>
+				<input
+					type="text"
+					id="nicknameInput"
+					className="hive-input-btn-input"
+					value={nickname}
+					onChange={(e) => setNickname(e.target.value)}
+				/>
 
-			<button
-				className="button"
-				onClick={() => {
-					if (players.find((p) => p.nickname === playerState.nickname) === undefined && nickname) {
-						joinGame(
-							props.client,
-							nickname,
-						);
-					}
-				}}>
-
-				Join Game
-			</button>
-			<br/>
-			<h4 style={{margin: 2}}>Current players:</h4>
-			{players.map((
-				p,
-				i,
-			) => (
-				<h5
-					style={{
-						margin: 0,
-						marginLeft: 4,
-					}}
-					key={i}>
-					{i + 1}. {p.nickname}
-				</h5>
-			))}
-			{players.length < 3 && <h5>Waiting on more players to join the game</h5>}
-			{players.length >= 3 &&
-				(isCreator ? <h5>Press "Play!" to start the game</h5> :
-					<h5>Waiting for host to start the game!</h5>)}
-			{players.length > 6 &&
-				(isCreator ? (
-					<h5>Too many players to start! Need to remove players (max 6)</h5>
-				) : (
-					<h5>Waiting for host to start the game!</h5>
-				))}
-			{isCreator && players.length >= 3 && players.length <= 6 && (
 				<button
-					className="button"
-					onClick={() => playGame(props.client)}
-					disabled={players.length === 0}>
+					className="button lobby__game-join-button"
+					onClick={() => {
+						if (players.find((p) => p.nickname === playerState.nickname) === undefined && nickname) {
+							joinGame(
+								props.client,
+								nickname,
+							);
+						}
+					}}>
 
-					Play!
+					Join Game
 				</button>
-			)}
+			</div>
+
+			<div className="ui-card lobby__current-players">
+				<h4 style={{margin: 2}}>Current players:</h4>
+				{players.map((
+					p,
+					i,
+				) => (
+					<h5
+						style={{
+							margin: 0,
+							marginLeft: 4,
+						}}
+						key={i}>
+
+						{i + 1}. {p.nickname}
+					</h5>
+				))}
+
+				{players.length < 3 && <h5>Waiting on more players to join the game</h5>}
+				{players.length >= 3 &&
+					(isCreator ? <h5>Press "Play!" to start the game</h5> :
+						<h5>Waiting for host to start the game!</h5>)}
+				{players.length > 6 &&
+					(isCreator ? (
+						<h5>Too many players to start! Need to remove players (max 6)</h5>
+					) : (
+						<h5>Waiting for host to start the game!</h5>
+					))}
+				{isCreator && players.length >= 3 && players.length <= 6 && (
+					<button
+						className="button"
+						onClick={() => playGame(props.client)}
+						disabled={players.length === 0}>
+
+						Play!
+					</button>
+				)}
+			</div>
 		</div>
 	);
 }

@@ -93,9 +93,9 @@ export default class InGame
 								</>
 							)
 							: (
-								<div>
+								<span className="label">
 									No trump card this round
-								</div>
+								</span>
 							)
 						}
 					</div>
