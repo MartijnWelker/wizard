@@ -459,6 +459,10 @@ export class Impl
 		if (state.playedCards.length === 0) {
 			card = hand.cards[0];
 		} else {
+			const firstPlayedNonSpecialCard = state.playedCards.find(
+				_card => _card.card.specialType === undefined,
+			);
+
 			console.log(
 				'Autopicking card',
 			);
@@ -474,7 +478,10 @@ export class Impl
 					break;
 				}
 
-				if (_card.color === state.playedCards[0].card.color) {
+				if (
+					firstPlayedNonSpecialCard === undefined
+					|| _card.color === firstPlayedNonSpecialCard.card.color
+				) {
 					card = _card;
 
 					break;
