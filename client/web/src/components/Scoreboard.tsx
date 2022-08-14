@@ -36,6 +36,14 @@ export default class ScoreBoard
 				</tr>
 				</thead>
 				<tbody>
+				{playerState.pointsPerRound.length === 0 && (
+					<tr>
+						<td colSpan={1 + playerState.hand.length}>
+							No scores yet
+						</td>
+					</tr>
+				)}
+
 				{playerState.pointsPerRound.map(
 					(
 						points,

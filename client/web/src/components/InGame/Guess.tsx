@@ -27,16 +27,13 @@ export default class Guess
 		const {
 			playerState,
 			currentPlayerInfo,
-			activePlayerInfo,
 		} = this.props;
 
 		if (playerState.turn !== currentPlayerInfo.id) {
-			return (
-				<p>
-					{activePlayerInfo.nickname} is guessing
-				</p>
-			);
+			return;
 		}
+
+		const cannotSayAmount = this.getCannotSay();
 
 		return (
 			<div>
@@ -57,15 +54,37 @@ export default class Guess
 					Guess
 				</button>
 
-				<span>
-					(Cannot say {this.getCannotSay()})
-				</span>
+				{cannotSayAmount !== null && (
+					<p className={'guess__cannot-say'}>
+						(Cannot say {this.getCannotSay()})
+					</p>
+				)}
 			</div>
 		);
 	}
 
-	private getCannotSay (): number {
-		return 0;
+	private getCannotSay (): number | null {
+		const playerState = this.props.playerState;
+		const guesses = playerState.guesses;
+
+		// Only the last player cannot make everyone "happy"
+		if (guesses.length !== playerState.players.length - 1) {
+			return null;
+		}
+
+		const totalSaid = playerState.guesses.reduce(
+			(
+				total,
+				guess,
+			) => total + guess.guess,
+			0,
+		);
+
+		if (totalSaid > playerState.hand.length) {
+			return null;
+		}
+
+		return playerState.hand.length - totalSaid;
 	}
 
 	private getDefaultState (props: IGuessProps): IGuessState {

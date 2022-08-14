@@ -8,7 +8,7 @@ interface ICardsProps {
 	cards: CardType[],
 	active: boolean,
 	client: HathoraConnection,
-	sort?: boolean
+	sort?: boolean,
 }
 
 interface ICardsState {
@@ -75,23 +75,22 @@ export default class Cards
 		}
 
 		return (
-			<ul
-				style={{
-					listStyle: 'none',
-					display: 'flex',
-					gap: '8px',
-				}}>
+			<ul className={'cards__cards-list'}>
 				{cards.map(
-					card => <li key={this.getCardHash(card)}>
-						<button
-							className={`cards__card-button ${active ? 'cards__card-button--active' : ''}`}
-							onClick={() => {
-								this.playCard(card);
-							}}>
+					card => {
+						return <li
+							key={this.getCardHash(card)}>
 
-							<Card card={card}/>
-						</button>
-					</li>,
+							<button
+								className={`cards__card-button ${active ? 'cards__card-button--active' : ''}`}
+								onClick={() => {
+									this.playCard(card);
+								}}>
+
+								<Card card={card}/>
+							</button>
+						</li>;
+					},
 				)}
 			</ul>
 		);

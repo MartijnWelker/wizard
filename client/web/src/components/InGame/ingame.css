@@ -1,14 +1,17 @@
 .ingame {
+    width: 100%;
+    height: 100%;
     padding: 32px;
 
     display: grid;
     grid-template:
         "header header"
         "trump score"
-        "played score"
-        "hand hand"
-        "guess guess"
+        "_ score"
+        "played played" 1fr
+        "guess guess" 1fr
         "player player"
+        "hand hand"
         / 1fr 1fr;
     grid-column-gap: 32px;
     grid-row-gap: 16px;
@@ -18,7 +21,6 @@
     grid-area: header;
     display: grid;
     grid-template:
-        "round guess"
         "round guess"
         / 1fr 1fr;
 
@@ -51,10 +53,18 @@
 
 .ingame__played-cards {
     grid-area: played;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .ingame__your-cards {
     grid-area: hand;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .ingame__current-player {
@@ -63,10 +73,17 @@
     padding: 16px;
     border: 1px solid black;
     background: #6c91d9;
+    margin: 0 auto;
+    min-width: 50%;
+    text-align: center;
 }
 
 .ingame__guess {
     grid-area: guess;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .ingame__current-player--you {
