@@ -1,8 +1,10 @@
 import { Response } from '../api/base';
-import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, INextRoundRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, SpecialType, TotalPoints, UserId } from '../api/types';
+import { Card, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, INextRoundRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, TotalPoints, UserId } from '../api/types';
 import { Context, Methods } from './.hathora/methods';
+import { transitionTo } from './GameStateMachine';
+import { amountOfCards, findHand, formatCard } from './util';
 
-type InternalState = {
+export type InternalState = {
 	deck: Card[],
 	hands: {
 		userId: UserId,
@@ -25,44 +27,7 @@ type InternalState = {
 export class Impl
 	implements Methods<InternalState> {
 
-	private static createDeck (): Card[] {
-		const deck: Card[] = [];
-
-		for (let i = 1; i <= 13; i++) {
-			deck.push({
-				value: i,
-				color: Color.BLUE,
-			});
-			deck.push({
-				value: i,
-				color: Color.RED,
-			});
-			deck.push({
-				value: i,
-				color: Color.GREEN,
-			});
-			deck.push({
-				value: i,
-				color: Color.YELLOW,
-			});
-		}
-
-		for (let i = 0; i < 4; i++) {
-			deck.push({
-				value: i,
-				specialType: SpecialType.WIZARD,
-			});
-
-			deck.push({
-				value: i,
-				specialType: SpecialType.JOKER,
-			});
-		}
-
-		return deck;
-	}
-
-	initialize (
+	public initialize (
 		ctx: Context,
 		request: IInitializeRequest,
 	): InternalState {
@@ -84,7 +49,7 @@ export class Impl
 		};
 	}
 
-	joinGame (
+	public joinGame (
 		state: InternalState,
 		userId: UserId,
 		ctx: Context,
@@ -115,7 +80,7 @@ export class Impl
 		return Response.ok();
 	}
 
-	startGame (
+	public startGame (
 		state: InternalState,
 		userId: UserId,
 		ctx: Context,
@@ -133,15 +98,12 @@ export class Impl
 			);
 		}
 
-		// Played left of the dealer starts first
-		state.turnIdx = 1;
-
-		this.prepareDeck(
+		return transitionTo(
+			GameState.GUESS,
 			state,
 			ctx,
+			userId,
 		);
-
-		return Response.ok();
 	}
 
 	public submitGuess (
@@ -162,7 +124,7 @@ export class Impl
 			);
 		}
 
-		const hand = this.findHand(
+		const hand = findHand(
 			state,
 			userId,
 		);
@@ -200,21 +162,22 @@ export class Impl
 		state.turnIdx = (state.turnIdx + 1) % state.hands.length;
 
 		if (
-			state.hands.every(
+			!state.hands.every(
 				hand => state.guesses[hand.userId] !== undefined,
 			)
 		) {
-			state.gameState = GameState.PLAY;
-
-			console.log(
-				`Everyone guessed! ${state.hands[state.turnIdx].userId} can start`,
-			);
+			return Response.ok();
 		}
 
-		return Response.ok();
+		return transitionTo(
+			GameState.PLAY,
+			state,
+			ctx,
+			userId,
+		);
 	}
 
-	playCard (
+	public playCard (
 		state: InternalState,
 		userId: UserId,
 		ctx: Context,
@@ -254,7 +217,7 @@ export class Impl
 		if (cardIdx < 0) {
 			const formattedHand = cards
 				.map(
-					card => this.formatCard(
+					card => formatCard(
 						card,
 					),
 				)
@@ -262,7 +225,7 @@ export class Impl
 					', ',
 				);
 
-			const formattedCard = this.formatCard(
+			const formattedCard = formatCard(
 				request.card,
 			);
 
@@ -312,7 +275,7 @@ export class Impl
 		// Turns are independent of rounds because the user who wins the round gets to play
 		state.turnIdx = (state.turnIdx + 1) % state.hands.length;
 
-		const formattedCard = this.formatCard(
+		const formattedCard = formatCard(
 			request.card,
 		);
 
@@ -325,42 +288,12 @@ export class Impl
 		);
 
 		if (state.playedCards.length === state.hands.length) {
-			console.log(
-				'Everyone played a card!',
-			);
-
-			const highestPlayedCard = this.getHighestPlayedCard(
+			return transitionTo(
+				GameState.BATTLE_DONE,
 				state,
+				ctx,
+				userId,
 			);
-
-			state.winsThisRound[highestPlayedCard.nickname] ??= 0;
-			state.winsThisRound[highestPlayedCard.nickname] += 1;
-
-			const formattedCard = this.formatCard(
-				highestPlayedCard.card,
-			);
-
-			const winsByUser = state.winsThisRound[highestPlayedCard.nickname];
-
-			console.log(
-				`The highest played card was ${formattedCard} by user ${highestPlayedCard.nickname}. He now has ${winsByUser} wins`,
-			);
-
-			const winPlayerIndex = state.hands.findIndex(
-				hand => state.nicknames.get(hand.userId)! === highestPlayedCard.nickname,
-			) ?? 0;
-
-			state.turnIdx = winPlayerIndex;
-			state.gameState = GameState.BATTLE_DONE;
-			state.highestPlayedCard = highestPlayedCard;
-
-			if (
-				state.hands.every(
-					hand => hand.cards.length === 0,
-				)
-			) {
-				state.gameState = GameState.ROUND_DONE;
-			}
 		}
 
 		return Response.ok();
@@ -373,48 +306,40 @@ export class Impl
 		request: INextRoundRequest,
 	): Response {
 		if (state.gameState === GameState.BATTLE_DONE) {
-			console.log(
-				'Starting next battle',
+			return transitionTo(
+				GameState.PLAY,
+				state,
+				ctx,
+				userId,
 			);
-
-			state.playedCards = [];
-			state.highestPlayedCard = undefined;
-			state.gameState = GameState.PLAY;
-
-			return Response.ok();
 		}
 
 		if (state.gameState === GameState.ROUND_DONE) {
-			this.countPoints(
-				state,
-			);
+			const cardsNeededForNextRound = ((state.round + 1) * state.hands.length);
 
-			if (((state.round + 1) * state.hands.length) > Impl.createDeck().length) {
-				state.gameState = GameState.WINNER;
-
-				return Response.ok();
+			if (cardsNeededForNextRound > amountOfCards) {
+				return transitionTo(
+					GameState.WINNER,
+					state,
+					ctx,
+					userId,
+				);
 			}
 
 			console.log(
 				'Starting next round',
 			);
 
-			state.winsThisRound = {};
 			state.round++;
 			// Dealer moves to the next person
 			state.turnIdx = state.round % state.hands.length;
 
-			console.log(
-				'-------------- NEXT ROUND ----------------',
-			);
-
-			// And reset the table
-			this.prepareDeck(
+			return transitionTo(
+				GameState.GUESS,
 				state,
 				ctx,
+				userId,
 			);
-
-			return Response.ok();
 		}
 
 		return Response.error(
@@ -469,7 +394,7 @@ export class Impl
 
 			for (const _card of hand.cards) {
 				console.log(
-					`comparing ${this.formatCard(_card)} to ${this.formatCard(state.playedCards[0].card)}`,
+					`comparing ${formatCard(_card)} to ${formatCard(state.playedCards[0].card)}`,
 				);
 
 				if (_card.specialType) {
@@ -503,7 +428,7 @@ export class Impl
 		);
 	}
 
-	getUserState (
+	public getUserState (
 		state: InternalState,
 		userId: UserId,
 	): PlayerState {
@@ -542,7 +467,7 @@ export class Impl
 
 		return {
 			// Current users' hand
-			hand: this.findHand(
+			hand: findHand(
 				state,
 				userId,
 			),
@@ -626,190 +551,6 @@ export class Impl
 				obj.id,
 			)!,
 		);
-	}
-
-	private findHand (
-		state: InternalState,
-		userId: UserId,
-	): Card[] {
-		return state.hands.find(
-			hand => hand.userId === userId,
-		)?.cards ?? [];
-	}
-
-	private prepareDeck (
-		state: InternalState,
-		ctx: Context,
-	): void {
-		state.playedCards = [];
-		state.guesses = {};
-
-		state.deck = ctx.chance.shuffle(
-			Impl.createDeck(),
-		);
-
-		for (let i = 0; i < state.hands.length; i++) {
-			// Every round the first hand shifts 1 position
-			const hand = state.hands[(state.turnIdx + i) % state.hands.length];
-
-			for (let i = 0; i < state.round; i++) {
-				hand.cards.push(
-					state.deck.pop()!,
-				);
-			}
-		}
-
-		state.trump = [];
-
-		// Todo: The rules state that when a JOKER is picked the round is played without a trump card
-		// and when a WIZARD is picked the first player gets to decide
-		// For now we just programmed it like we usually play
-		while (true) {
-			const nextTrump = state.deck.pop();
-
-			if (nextTrump === undefined) {
-				break;
-			}
-
-			state.trump.push(
-				nextTrump,
-			);
-
-			if (nextTrump.specialType === undefined) {
-				break;
-			}
-
-			const formattedCard = this.formatCard(
-				nextTrump,
-			);
-
-			console.log(
-				`Picked trump card ${formattedCard} so picking another one`,
-			);
-		}
-
-		state.gameState = GameState.GUESS;
-
-		console.log(
-			`${state.hands[state.turnIdx].userId} can start with guessing`,
-		);
-	}
-
-	private countPoints (
-		state: InternalState,
-	): void {
-		const pointsThisRound: Record<UserId, number> = state.pointsPerRound[state.round - 1] = {};
-
-		for (const hand of state.hands) {
-			const userId = hand.userId as UserId;
-			const nickname = state.nicknames.get(
-				userId,
-			)!;
-
-			const guessed = state.guesses[userId];
-			const won = state.winsThisRound[nickname] ?? 0;
-
-			if (guessed === won) {
-				const pointsDelta = 20 + (guessed * 10);
-
-				console.log(
-					`User ${userId} wins ${pointsDelta} points! Guessed ${guessed}`,
-				);
-				// 20 base points + 10 per correct guess
-				pointsThisRound[userId] = 20 + (guessed * 10);
-			} else {
-				// Lose 10 points per wrong guess
-				const wrongGuessCount = Math.abs(guessed - won);
-				const pointsDelta = 0 - (wrongGuessCount * 10);
-
-				console.log(
-					`User ${userId} is losing ${pointsDelta} points! Guessed ${guessed} but won ${won}`,
-				);
-
-				pointsThisRound[userId] = pointsDelta;
-			}
-
-			state.totalPoints[userId] ??= 0;
-
-			const oldPoints = state.totalPoints[userId];
-
-			state.totalPoints[userId] += pointsThisRound[userId];
-
-			console.log(
-				`${userId} went from ${oldPoints} to ${state.totalPoints[userId]} points`,
-			);
-		}
-	}
-
-	private getHighestPlayedCard (
-		state: InternalState,
-	): PlayedCard {
-		let highestPlayedCard: PlayedCard = state.playedCards[0];
-		const trump = state.trump[state.trump.length - 1];
-
-		if (highestPlayedCard.card.specialType !== SpecialType.WIZARD) {
-			for (let i = 1; i < state.playedCards.length; i++) {
-				const playedCard = state.playedCards[i];
-				const formattedCard = this.formatCard(
-					playedCard.card,
-				);
-
-				if (playedCard.card.specialType === SpecialType.JOKER) {
-					console.log(
-						`Card ${formattedCard} played by ${playedCard.nickname} is a Joker, skipping`,
-					);
-
-					continue;
-				}
-
-				if (playedCard.card.specialType === SpecialType.WIZARD) {
-					console.log(
-						`Card ${formattedCard} played by ${playedCard.nickname} is a Wizard, breaking out`,
-					);
-
-					highestPlayedCard = playedCard;
-
-					break;
-				}
-
-				if (
-					highestPlayedCard.card.specialType === SpecialType.JOKER
-					|| (
-						// If the user has played a higher card of the same color as the earlier card
-						playedCard.card.color === highestPlayedCard.card.color
-						&& playedCard.card.value > highestPlayedCard.card.value
-					)
-					|| (
-						trump !== undefined
-						// Or the user has played a trump card
-						&& playedCard.card.color === trump.color
-						&& (
-							highestPlayedCard.card.color !== trump.color
-							|| playedCard.card.value > highestPlayedCard.card.value
-						)
-					)
-				) {
-					const oldFormattedCard = this.formatCard(
-						highestPlayedCard.card,
-					);
-
-					console.log(
-						`Highest card went from ${oldFormattedCard} to ${formattedCard}`,
-					);
-
-					highestPlayedCard = playedCard;
-				}
-			}
-		}
-
-		return highestPlayedCard;
-	}
-
-	private formatCard (
-		card: Card,
-	): string {
-		// @ts-ignore
-		return `${Color[card.color] ?? SpecialType[card.specialType]}-${card.value}`;
 	}
 
 }

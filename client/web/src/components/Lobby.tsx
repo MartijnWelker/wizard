@@ -27,6 +27,10 @@ export default function (
 		document.baseURI,
 	);
 
+	console.log(
+		playerState,
+	);
+
 	return (
 		<div className="lobby">
 			{props.debugMode && (
