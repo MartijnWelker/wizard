@@ -3,9 +3,10 @@ import { PlayerState } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
 
 interface ILobbyProps {
-	isCreator: boolean;
-	playerState: PlayerState;
-	client: HathoraConnection;
+	isCreator: boolean,
+	playerState: PlayerState,
+	client: HathoraConnection,
+	debugMode: boolean,
 }
 
 interface ILobbyState {
@@ -14,7 +15,10 @@ interface ILobbyState {
 
 class Lobby
 	extends React.Component<ILobbyProps, ILobbyState> {
-	private url = document.baseURI;
+
+	private url: URL = new URL(
+		document.baseURI,
+	);
 
 	constructor (props: ILobbyProps) {
 		super(props);
@@ -30,12 +34,16 @@ class Lobby
 
 		return (
 			<div className="Lobby">
+				{this.props.debugMode && (
+					<p>Game is in debug mode!</p>
+				)}
+
 				<h3>Game Code: {this.getSessionCode()}</h3>
 				<span>
 					<input
 						className="hive-input-btn-input"
 						type="url"
-						value={this.url}
+						value={this.url.href}
 						id="urlText"
 						readOnly/>
 					<button
@@ -124,7 +132,7 @@ class Lobby
 	};
 
 	private getSessionCode (): string {
-		return this.url.split('game/')[1].toUpperCase();
+		return this.url.pathname.split('game/')[1].toUpperCase();
 	}
 
 	private copyUrl (): void {

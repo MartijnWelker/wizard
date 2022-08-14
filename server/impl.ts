@@ -70,7 +70,7 @@ export class Impl
 			hands: [],
 			playedCards: [],
 			turnIdx: 0,
-			round: 20,
+			round: 1,
 			pointsPerRound: [],
 			totalPoints: {},
 			guesses: {},
@@ -350,16 +350,7 @@ export class Impl
 		ctx: Context,
 		request: IAutoPlayRequest,
 	): Response {
-		/**
-		 * window.setInterval(() => {
-		 * var xpath = "//label[text()='autoPlay']";
-		 * var matchingElement = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-		 * matchingElement.parentElement.querySelector('button').click()
-		 * }, 1000);
-		 */
-		if (userId !== state.hands[state.turnIdx].userId) {
-			return Response.ok();
-		}
+		userId = state.hands[state.turnIdx].userId;
 
 		if (state.gameState === GameState.GUESS) {
 			return this.submitGuess(

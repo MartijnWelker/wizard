@@ -11,6 +11,7 @@ interface IInGameProps {
 	client: HathoraConnection,
 	currentPlayerInfo: Player,
 	activePlayerInfo: Player,
+	debugMode: boolean,
 }
 
 interface IInGameState {
@@ -122,6 +123,15 @@ export default class InGame
 					</div>
 				)}
 
+				{this.props.debugMode && (
+					<button
+						onClick={() => this.autoPlay()}
+						className={'ingame__autoplay-button'}>
+
+						Autoplay
+					</button>
+				)}
+
 				{playerState.gameState === GameState.GUESS && (
 					<div className={'ingame__guess'}>
 						<Guess
@@ -145,9 +155,11 @@ export default class InGame
 						)}
 				</div>
 
-				<div className={'ingame__score-board'}>
-					<ScoreBoard
-						playerState={playerState}/>
+				<div className={'ingame__score-board-container'}>
+					<div className="ingame__score-board">
+						<ScoreBoard
+							playerState={playerState}/>
+					</div>
 				</div>
 			</div>
 		);
@@ -169,6 +181,13 @@ export default class InGame
 		amountPlayers: number,
 	): number {
 		return 60 / amountPlayers;
+	}
+
+	private autoPlay (): void {
+		this.props.client.autoPlay({})
+			.then(
+				response => response.type === 'error' && alert(response.error),
+			);
 	}
 
 }

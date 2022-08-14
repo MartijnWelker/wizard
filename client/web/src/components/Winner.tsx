@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PlayerState } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
 import ScoreBoard from './Scoreboard';
@@ -17,10 +18,16 @@ export default class Winner
 	public render () {
 		return (
 			<>
-				<span>The winner(s) are: {this.props.playerState.winner!.join(', ')}</span>
+				<p>
+					The winner(s) are: {this.props.playerState.winner!.join(', ')}
+				</p>
 
 				<ScoreBoard
 					playerState={this.props.playerState}/>
+
+				<Link to={'/'}>
+					Back to home
+				</Link>
 			</>
 		);
 	}

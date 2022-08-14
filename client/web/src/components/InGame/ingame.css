@@ -12,12 +12,22 @@
         "guess guess" 1fr
         "player player"
         "hand hand"
+        "autoplay autoplay"
         / 1fr 1fr;
     grid-column-gap: 32px;
     grid-row-gap: 16px;
 
     background: rgb(92, 155, 64);
     background: radial-gradient(circle, rgba(92, 155, 64, 1) 0%, rgba(37, 101, 51, 1) 100%);
+    background-position: center 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.ingame__autoplay-button {
+    grid-area: autoplay;
+    margin: 16px auto 0;
 }
 
 .ingame__header {
@@ -107,9 +117,16 @@
     background: #fcda49;
 }
 
-.ingame__score-board {
+.ingame__score-board-container {
     grid-area: score;
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
+    position: relative;
+}
+
+.ingame__score-board {
+    position: absolute;
+    top: 0;
+    right: 0;
 }

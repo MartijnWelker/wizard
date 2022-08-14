@@ -14,6 +14,12 @@ interface IGameProps {
 }
 
 function Game (props: IGameProps) {
+	const debugMode = new URLSearchParams(
+		window.location.search,
+	).get(
+		'debugMode',
+	) === 'true';
+
 	const [playerState, setPlayerState] = useState<PlayerState | undefined>(undefined);
 	const [hathora, setHathora] = useState<HathoraConnection | undefined>(undefined);
 	const [is404, setIs404] = useState<boolean>(false);
@@ -28,6 +34,7 @@ function Game (props: IGameProps) {
 					history,
 					setHathora,
 					setPlayerState,
+					debugMode,
 				)
 					.catch((e) => {
 						console.error(
@@ -40,11 +47,6 @@ function Game (props: IGameProps) {
 		},
 		[path],
 	);
-
-	console.log(
-		playerState,
-	);
-
 	if (playerState && hathora && !is404 && path !== '/game') {
 		const currentPlayerInfo = playerState.players.find(
 			player => player.nickname === playerState.nickname,
@@ -61,7 +63,8 @@ function Game (props: IGameProps) {
 						<Lobby
 							isCreator={true}
 							playerState={playerState}
-							client={hathora}/>
+							client={hathora}
+							debugMode={debugMode}/>
 					)}
 
 					{(playerState.gameState === GameState.GUESS || playerState.gameState === GameState.PLAY) && (
@@ -69,7 +72,8 @@ function Game (props: IGameProps) {
 							playerState={playerState}
 							client={hathora}
 							currentPlayerInfo={currentPlayerInfo}
-							activePlayerInfo={activePlayerInfo}/>
+							activePlayerInfo={activePlayerInfo}
+							debugMode={debugMode}/>
 					)}
 
 					{playerState.gameState === GameState.WINNER && (
@@ -96,6 +100,7 @@ async function initConnection (
 	history: History,
 	setHathora: (client: HathoraConnection) => void,
 	onStateChange: (state: PlayerState) => void,
+	debugMode: boolean,
 ): Promise<void> {
 	const storedUserData = sessionStorage.getItem('user');
 	const token: string = storedUserData
@@ -108,12 +113,16 @@ async function initConnection (
 				);
 				return t;
 			});
+
 	if (path === '/game') {
 		const stateId = await client.create(
 			token,
 			{},
 		);
-		history.replace(`/game/${stateId}`);
+
+		history.replace(
+			`/game/${stateId}?debugMode=${debugMode}`,
+		);
 	} else {
 		const stateId = path.split('/')
 			.pop()!;

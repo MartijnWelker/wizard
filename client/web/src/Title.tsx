@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function Title () {
 	const [gameId, setGameId] = useState<string>('');
+	const [debugMode, setDebugMode] = useState<boolean>(false);
+
+	useEffect(
+		() => {
+			console.log(
+				'Debugmode is now',
+				debugMode,
+			);
+		},
+		[debugMode],
+	);
 
 	return (
 		<>
@@ -31,11 +42,26 @@ function Title () {
 						alignItems: 'center',
 						padding: 8,
 					}}>
-					<span><Link
-						to="/game"
-						style={{display: 'inline-block'}}>
-						New Game
-					</Link></span>
+					<span>
+						<Link
+							to={{
+								pathname: '/game',
+								search: `?debugMode=${debugMode}`,
+							}}
+							style={{display: 'inline-block'}}>
+
+							New Game
+						</Link>
+
+						<label style={{marginLeft: '8px'}}>
+							Debug mode
+
+							<input
+								type="checkbox"
+								checked={debugMode}
+								onChange={() => setDebugMode(!debugMode)}/>
+						</label>
+					</span>
 					<br/>
 					<label htmlFor="gameIdInput">Game code:</label>
 					<input
