@@ -42,22 +42,26 @@ export default class InGame
 			<div className={'ingame'}>
 				<div className={'ingame__header'}>
 					<div className={'ingame__header-round'}>
-						Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}
+						<span className="label">
+							Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}
+						</span>
 					</div>
-					<div className={'ingame__header-guess'}>
-						Total guessed: {this.getTotalGuessed(playerState.guesses)}/{playerState.round}
+					<div className={'ingame__header-guesses'}>
+						<span className="label">
+							Total guessed: {this.getTotalGuessed(playerState.guesses)}/{playerState.round}
+						</span>
 						<br/>
-						<ul>
+						<ul className={'ingame__guess-list'}>
 							{playerState.guesses.map(
 								guess => <li
 									key={`guess-${guess.nickname}`}
 									className={
 										guess.nickname === currentPlayerInfo.nickname
-											? 'ingame__header-current-player-guess'
-											: ''
+											? 'ingame__header-guess label ingame__header-guess--current-player'
+											: 'ingame__header-guess label'
 									}>
 
-									{guess.nickname}: {guess.guess}
+									{guess.nickname}: {guess.guess} {guess.nickname === currentPlayerInfo.nickname && ('(you)')}
 								</li>,
 							)}
 						</ul>
@@ -68,9 +72,9 @@ export default class InGame
 					{playerState.trump.length > 0
 						? (
 							<>
-								<div>
+								<span className="label">
 									Trump cards (only last one counts)
-								</div>
+								</span>
 
 								<Cards
 									active={false}
@@ -90,7 +94,9 @@ export default class InGame
 					playerState.playedCards.length > 0
 					&& (
 						<div className={'ingame__played-cards'}>
-							Played cards:
+							<span className="label">
+								Played cards:
+							</span>
 
 							<Cards
 								active={false}
@@ -104,7 +110,9 @@ export default class InGame
 
 				{playerState.hand.length > 0 && (
 					<div className={'ingame__your-cards'}>
-						Your cards:
+						<span className="label">
+							Your cards:
+						</span>
 
 						<Cards
 							active={playerState.gameState === GameState.PLAY && activePlayerInfo.id === currentPlayerInfo.id}

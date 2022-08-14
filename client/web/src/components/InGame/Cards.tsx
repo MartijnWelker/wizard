@@ -107,7 +107,7 @@ export default class Cards
 								<Card card={card}/>
 
 								{this.props.showName && isPlayedCard && (
-									<span>
+									<span className="label cards__player-name">
 										{_card.nickname}
 									</span>
 								)}

@@ -15,6 +15,9 @@
         / 1fr 1fr;
     grid-column-gap: 32px;
     grid-row-gap: 16px;
+
+    background: url("../../../public/table.jpg") no-repeat center center;
+    background-size: cover;
 }
 
 .ingame__header {
@@ -31,14 +34,28 @@
     grid-area: round;
 }
 
-.ingame__header-guess {
+.ingame__header-guesses {
     grid-area: guess;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.ingame__header-current-player-guess {
+.ingame__guess-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ingame__header-guess {
+    text-align: right;
+}
+
+.ingame__header-guess + .ingame__header-guess {
+    margin-top: 4px;
+}
+
+.ingame__header-guess--current-player {
     font-weight: bold;
     text-decoration: underline;
 }

@@ -7,6 +7,7 @@
     border-width: 3px;
     border-style: solid;
     font-size: 30px;
+    background: white;
 }
 
 .card__inner {
