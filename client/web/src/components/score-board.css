@@ -8,6 +8,10 @@
 .score-board th,
 .score-board td {
     padding: 4px 8px;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: nowrap;
 }
 
 .score-board__round-number {

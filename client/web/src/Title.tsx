@@ -1,69 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import './title.css';
 
 function Title () {
 	const [gameId, setGameId] = useState<string>('');
 	const [debugMode, setDebugMode] = useState<boolean>(false);
 
-	useEffect(
-		() => {
-			console.log(
-				'Debugmode is now',
-				debugMode,
-			);
-		},
-		[debugMode],
-	);
-
 	return (
 		<>
-			<div
-				className={'tussie--title-header'}
-				style={{
-					display: 'flex',
-					flexDirection: 'column',
-				}}>
-				<div
-					style={{
-						display: 'flex',
-						justifyContent: 'center',
-					}}>
-					<h3 style={{margin: 4}}>
-						Wizard
-					</h3>
-				</div>
+			<div className={'title__title-container'}>
+				<h1>
+					Wizard
+				</h1>
 			</div>
-			<div className="tussie--title-container">
-				<div
-					className="inputs"
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						padding: 8,
-					}}>
-					<span>
-						<Link
-							to={{
-								pathname: '/game',
-								search: `?debugMode=${debugMode}`,
-							}}
-							style={{display: 'inline-block'}}>
+			<div className="title__container">
+				<div className="title__new-game-container">
+					<Link
+						to={{
+							pathname: '/game',
+							search: `?debugMode=${debugMode}`,
+						}}
+						className="button">
 
-							New Game
-						</Link>
+						New Game
+					</Link>
 
-						<label style={{marginLeft: '8px'}}>
-							Debug mode
+					<label className="title__debug-mode-toggle">
+						Debug mode
 
-							<input
-								type="checkbox"
-								checked={debugMode}
-								onChange={() => setDebugMode(!debugMode)}/>
-						</label>
-					</span>
-					<br/>
-					<label htmlFor="gameIdInput">Game code:</label>
+						<input
+							type="checkbox"
+							checked={debugMode}
+							onChange={() => setDebugMode(!debugMode)}/>
+					</label>
+				</div>
+
+				<div className="title__game-joiner-container">
+					<label htmlFor="gameIdInput">
+						Game code:
+					</label>
+
 					<input
 						type="text"
 						id="gameIdInput"
@@ -71,11 +47,13 @@ function Title () {
 						value={gameId}
 						onChange={(e) => setGameId(e.target.value.toLowerCase())}
 					/>
-					<span><Link
+
+					<Link
 						to={`/game/${gameId}`}
-						style={{display: 'inline-block'}}>
+						className="button title__join-game-button">
+
 						Join Game
-					</Link></span>
+					</Link>
 				</div>
 			</div>
 		</>

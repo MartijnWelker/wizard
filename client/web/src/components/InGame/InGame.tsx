@@ -41,118 +41,120 @@ export default class InGame
 
 		return (
 			<div className={'ingame'}>
-				<div className={'ingame__header'}>
-					<div className={'ingame__header-round'}>
-						<span className="label">
-							Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}
-						</span>
-					</div>
-					<div className={'ingame__header-guesses'}>
-						<span className="label">
-							Total guessed: {this.getTotalGuessed(playerState.guesses)}/{playerState.round}
-						</span>
-						<br/>
-						<ul className={'ingame__guess-list'}>
-							{playerState.guesses.map(
-								guess => <li
-									key={`guess-${guess.nickname}`}
-									className={
-										guess.nickname === currentPlayerInfo.nickname
-											? 'ingame__header-guess label ingame__header-guess--current-player'
-											: 'ingame__header-guess label'
-									}>
+				<div className="ingame__container">
+					<div className={'ingame__header'}>
+						<div className={'ingame__header-round'}>
+							<span className="label">
+								Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}
+							</span>
+						</div>
+						<div className={'ingame__header-guesses'}>
+							<span className="label">
+								Total guessed: {this.getTotalGuessed(playerState.guesses)}/{playerState.round}
+							</span>
+							<br/>
+							<ul className={'ingame__guess-list'}>
+								{playerState.guesses.map(
+									guess => <li
+										key={`guess-${guess.nickname}`}
+										className={
+											guess.nickname === currentPlayerInfo.nickname
+												? 'ingame__header-guess label ingame__header-guess--current-player'
+												: 'ingame__header-guess label'
+										}>
 
-									{guess.nickname}: {guess.guess} {guess.nickname === currentPlayerInfo.nickname && ('(you)')}
-								</li>,
-							)}
-						</ul>
+										{guess.nickname}: {guess.guess} {guess.nickname === currentPlayerInfo.nickname && ('(you)')}
+									</li>,
+								)}
+							</ul>
+						</div>
 					</div>
-				</div>
 
-				<div className={'ingame__trump-cards'}>
-					{playerState.trump.length > 0
-						? (
-							<>
+					<div className={'ingame__trump-cards'}>
+						{playerState.trump.length > 0
+							? (
+								<>
+									<span className="label">
+										Trump cards (only last one counts)
+									</span>
+
+									<Cards
+										active={false}
+										client={client}
+										cards={playerState.trump}/>
+								</>
+							)
+							: (
+								<div>
+									No trump card this round
+								</div>
+							)
+						}
+					</div>
+
+					{
+						playerState.playedCards.length > 0
+						&& (
+							<div className={'ingame__played-cards'}>
 								<span className="label">
-									Trump cards (only last one counts)
+									Played cards:
 								</span>
 
 								<Cards
 									active={false}
 									client={client}
-									cards={playerState.trump}/>
-							</>
-						)
-						: (
-							<div>
-								No trump card this round
+									cards={playerState.playedCards}
+									sort={false}
+									showName={true}/>
 							</div>
 						)
 					}
-				</div>
 
-				{
-					playerState.playedCards.length > 0
-					&& (
-						<div className={'ingame__played-cards'}>
+					{playerState.hand.length > 0 && (
+						<div className={'ingame__your-cards'}>
 							<span className="label">
-								Played cards:
+								Your cards:
 							</span>
 
 							<Cards
-								active={false}
+								active={playerState.gameState === GameState.PLAY && activePlayerInfo.id === currentPlayerInfo.id}
+								cards={playerState.hand}
 								client={client}
-								cards={playerState.playedCards}
-								sort={false}
-								showName={true}/>
+								sort={true}/>
 						</div>
-					)
-				}
+					)}
 
-				{playerState.hand.length > 0 && (
-					<div className={'ingame__your-cards'}>
-						<span className="label">
-							Your cards:
-						</span>
+					{this.props.debugMode && (
+						<button
+							onClick={() => this.autoPlay()}
+							className={'ingame__autoplay-button'}>
 
-						<Cards
-							active={playerState.gameState === GameState.PLAY && activePlayerInfo.id === currentPlayerInfo.id}
-							cards={playerState.hand}
-							client={client}
-							sort={true}/>
+							Autoplay
+						</button>
+					)}
+
+					{playerState.gameState === GameState.GUESS && (
+						<div className={'ingame__guess'}>
+							<Guess
+								playerState={playerState}
+								currentPlayerInfo={currentPlayerInfo}
+								activePlayerInfo={activePlayerInfo}
+								client={client}/>
+						</div>
+					)}
+
+					<div className={`ingame__current-player ${isYourTurn ? 'ingame__current-player--you' : ''}`}>
+						{isYourTurn
+							? (
+								<p>
+									It's your turn!
+								</p>
+							) : (
+								<p>
+									Player <b>{activePlayerInfo.nickname}</b> is playing...
+								</p>
+							)}
 					</div>
-				)}
-
-				{this.props.debugMode && (
-					<button
-						onClick={() => this.autoPlay()}
-						className={'ingame__autoplay-button'}>
-
-						Autoplay
-					</button>
-				)}
-
-				{playerState.gameState === GameState.GUESS && (
-					<div className={'ingame__guess'}>
-						<Guess
-							playerState={playerState}
-							currentPlayerInfo={currentPlayerInfo}
-							activePlayerInfo={activePlayerInfo}
-							client={client}/>
-					</div>
-				)}
-
-				<div className={`ingame__current-player ${isYourTurn ? 'ingame__current-player--you' : ''}`}>
-					{isYourTurn
-						? (
-							<p>
-								It's your turn!
-							</p>
-						) : (
-							<p>
-								Player <b>{activePlayerInfo.nickname}</b> is playing...
-							</p>
-						)}
 				</div>
 
 				<div className={'ingame__score-board-container'}>

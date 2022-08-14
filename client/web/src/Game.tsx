@@ -47,12 +47,18 @@ function Game (props: IGameProps) {
 		},
 		[path],
 	);
-	if (playerState && hathora && !is404 && path !== '/game') {
-		const currentPlayerInfo = playerState.players.find(
+
+	if (
+		playerState
+		&& hathora &&
+		!is404
+		&& path !== '/game'
+	) {
+		const currentPlayerInfo = playerState?.players.find(
 			player => player.nickname === playerState.nickname,
 		)!;
 
-		const activePlayerInfo = playerState.players.find(
+		const activePlayerInfo = playerState?.players.find(
 			player => player.id === playerState.turn,
 		)!;
 
@@ -67,7 +73,14 @@ function Game (props: IGameProps) {
 							debugMode={debugMode}/>
 					)}
 
-					{(playerState.gameState === GameState.GUESS || playerState.gameState === GameState.PLAY) && (
+					{(
+						playerState.gameState === GameState.GUESS
+						|| playerState.gameState === GameState.PLAY
+						&& (
+							currentPlayerInfo
+							&& activePlayerInfo
+						)
+					) && (
 						<InGame
 							playerState={playerState}
 							client={hathora}

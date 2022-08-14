@@ -1,0 +1,31 @@
+.title__title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+}
+
+.title__container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 32px;
+    justify-items: center;
+    align-items: center;
+}
+
+.title__game-joiner-container,
+.title__new-game-container {
+    display: flex;
+    flex-direction: column;
+    min-width: 250px;
+    min-height: 150px;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 16px;
+    background: #fff
+}
+
+.title__debug-mode-toggle,
+.title__join-game-button {
+    margin-top: 16px;
+}

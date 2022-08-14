@@ -4,10 +4,22 @@
     padding: 32px;
 
     display: grid;
+    grid-template-columns: 1fr min-content;
+    grid-gap: 32px;
+}
+
+@media (max-width: 1024px) {
+    .ingame {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.ingame__container {
+    display: grid;
     grid-template:
         "header header"
-        "trump score"
-        "_ score"
+        "trump trump"
         "played played" 1fr
         "guess guess" 1fr
         "player player"
@@ -16,13 +28,6 @@
         / 1fr 1fr;
     grid-column-gap: 32px;
     grid-row-gap: 16px;
-
-    background: rgb(92, 155, 64);
-    background: radial-gradient(circle, rgba(92, 155, 64, 1) 0%, rgba(37, 101, 51, 1) 100%);
-    background-position: center 0;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
 }
 
 .ingame__autoplay-button {
@@ -118,15 +123,15 @@
 }
 
 .ingame__score-board-container {
-    grid-area: score;
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
     position: relative;
 }
 
-.ingame__score-board {
-    position: absolute;
-    top: 0;
-    right: 0;
+@media (max-width: 1024px) {
+    .ingame__score-board-container {
+        justify-self: center;
+        margin-top: 32px;
+    }
 }
