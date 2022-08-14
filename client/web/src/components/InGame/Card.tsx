@@ -4,6 +4,7 @@ import './card.css';
 
 interface ICardProps {
 	card: CardType;
+	highlight?: boolean;
 }
 
 interface ICardState {
@@ -27,6 +28,7 @@ export default class Card
 	public render () {
 		const {
 			card,
+			highlight,
 		} = this.props;
 
 		let backgroundColor;
@@ -38,7 +40,7 @@ export default class Card
 		}
 
 		return (
-			<div className={'card'}>
+			<div className={`card ${highlight ? 'card--highlight' : ''}`}>
 				<div
 					className={'card__inner'}
 					style={{

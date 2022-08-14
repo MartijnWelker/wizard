@@ -1,5 +1,5 @@
 import { Response } from '../api/base';
-import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, SpecialType, TotalPoints, UserId } from '../api/types';
+import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, INextRoundRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, SpecialType, TotalPoints, UserId } from '../api/types';
 import { Context, Methods } from './.hathora/methods';
 
 type InternalState = {
@@ -19,6 +19,7 @@ type InternalState = {
 	winsThisRound: Record<Nickname, number>,
 	started: boolean,
 	nicknames: Map<UserId, Nickname>;
+	highestPlayedCard: PlayedCard | undefined,
 };
 
 export class Impl
@@ -79,6 +80,7 @@ export class Impl
 			started: false,
 			trump: [],
 			nicknames: new Map<UserId, Nickname>(),
+			highestPlayedCard: undefined,
 		};
 	}
 
@@ -322,26 +324,102 @@ export class Impl
 			`${state.playedCards.length}/${state.hands.length} cards played`,
 		);
 
-		// If everyone played a card
 		if (state.playedCards.length === state.hands.length) {
-			this.determineWinner(
-				state,
+			console.log(
+				'Everyone played a card!',
 			);
-		}
 
-		if (
-			// If everyone is out of cards the round is ended
-			state.hands.every(
-				hand => hand.cards.length === 0,
-			)
-		) {
-			this.handleRoundEnd(
+			const highestPlayedCard = this.getHighestPlayedCard(
 				state,
-				ctx,
 			);
+
+			state.winsThisRound[highestPlayedCard.nickname] ??= 0;
+			state.winsThisRound[highestPlayedCard.nickname] += 1;
+
+			const formattedCard = this.formatCard(
+				highestPlayedCard.card,
+			);
+
+			const winsByUser = state.winsThisRound[highestPlayedCard.nickname];
+
+			console.log(
+				`The highest played card was ${formattedCard} by user ${highestPlayedCard.nickname}. He now has ${winsByUser} wins`,
+			);
+
+			const winPlayerIndex = state.hands.findIndex(
+				hand => state.nicknames.get(hand.userId)! === highestPlayedCard.nickname,
+			) ?? 0;
+
+			state.turnIdx = winPlayerIndex;
+			state.gameState = GameState.BATTLE_DONE;
+			state.highestPlayedCard = highestPlayedCard;
+
+			if (
+				state.hands.every(
+					hand => hand.cards.length === 0,
+				)
+			) {
+				state.gameState = GameState.ROUND_DONE;
+			}
 		}
 
 		return Response.ok();
+	}
+
+	public nextRound (
+		state: InternalState,
+		userId: UserId,
+		ctx: Context,
+		request: INextRoundRequest,
+	): Response {
+		if (state.gameState === GameState.BATTLE_DONE) {
+			console.log(
+				'Starting next battle',
+			);
+
+			state.playedCards = [];
+			state.highestPlayedCard = undefined;
+			state.gameState = GameState.GUESS;
+
+			return Response.ok();
+		}
+
+		if (state.gameState === GameState.ROUND_DONE) {
+			this.countPoints(
+				state,
+			);
+
+			console.log(
+				'Starting next round',
+			);
+
+			state.winsThisRound = {};
+			state.round++;
+			// Dealer moves to the next person
+			state.turnIdx = state.round % state.hands.length;
+
+			if (state.round * state.hands.length > Impl.createDeck().length) {
+				state.gameState = GameState.WINNER;
+
+				return Response.ok();
+			}
+
+			console.log(
+				'-------------- NEXT ROUND ----------------',
+			);
+
+			// And reset the table
+			this.prepareDeck(
+				state,
+				ctx,
+			);
+
+			return Response.ok();
+		}
+
+		return Response.error(
+			'Round is not done yet',
+		);
 	}
 
 	public autoPlay (
@@ -351,6 +429,15 @@ export class Impl
 		request: IAutoPlayRequest,
 	): Response {
 		userId = state.hands[state.turnIdx].userId;
+
+		if (state.gameState === GameState.ROUND_DONE) {
+			return this.nextRound(
+				state,
+				userId,
+				ctx,
+				{},
+			);
+		}
 
 		if (state.gameState === GameState.GUESS) {
 			return this.submitGuess(
@@ -494,6 +581,7 @@ export class Impl
 			nickname: state.nicknames.get(
 				userId,
 			) ?? 'No nickname',
+			highestPlayedCard: state.highestPlayedCard ?? undefined,
 		};
 	}
 
@@ -597,9 +685,8 @@ export class Impl
 		);
 	}
 
-	private handleRoundEnd (
+	private countPoints (
 		state: InternalState,
-		ctx: Context,
 	): void {
 		const pointsThisRound: Record<UserId, number> = state.pointsPerRound[state.round - 1] = {};
 
@@ -642,32 +729,11 @@ export class Impl
 				`${userId} went from ${oldPoints} to ${state.totalPoints[userId]} points`,
 			);
 		}
-
-		state.winsThisRound = {};
-		state.round++;
-		// Dealer moves to the next person
-		state.turnIdx = state.round % state.hands.length;
-
-		if (state.round * state.hands.length > Impl.createDeck().length) {
-			state.gameState = GameState.WINNER;
-
-			return;
-		}
-
-		console.log(
-			'-------------- NEXT ROUND ----------------',
-		);
-
-		// And reset the table
-		this.prepareDeck(
-			state,
-			ctx,
-		);
 	}
 
-	private determineWinner (
+	private getHighestPlayedCard (
 		state: InternalState,
-	): void {
+	): PlayedCard {
 		let highestPlayedCard: PlayedCard = state.playedCards[0];
 		const trump = state.trump[state.trump.length - 1];
 
@@ -726,25 +792,7 @@ export class Impl
 			}
 		}
 
-		state.winsThisRound[highestPlayedCard.nickname] ??= 0;
-		state.winsThisRound[highestPlayedCard.nickname] += 1;
-
-		const formattedCard = this.formatCard(
-			highestPlayedCard.card,
-		);
-
-		const winsByUser = state.winsThisRound[highestPlayedCard.nickname];
-
-		console.log(
-			`The highest played card was ${formattedCard} by user ${highestPlayedCard.nickname}. He now has ${winsByUser} wins`,
-		);
-
-		const winPlayerIndex = state.hands.findIndex(
-			hand => state.nicknames.get(hand.userId)! === highestPlayedCard.nickname,
-		) ?? 0;
-
-		state.turnIdx = winPlayerIndex;
-		state.playedCards = [];
+		return highestPlayedCard;
 	}
 
 	private formatCard (

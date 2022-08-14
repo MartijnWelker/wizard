@@ -109,12 +109,17 @@
     text-align: center;
 }
 
+.ingame__round-done,
 .ingame__guess {
     grid-area: guess;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.ingame__next-round-button {
+    margin-top: 16px;
 }
 
 .ingame__current-player--you {

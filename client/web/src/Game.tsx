@@ -45,7 +45,12 @@ function Game (props: IGameProps) {
 					});
 			}
 		},
-		[path],
+		[
+			path,
+			history,
+			debugMode,
+			hathora,
+		],
 	);
 
 	if (
@@ -74,8 +79,7 @@ function Game (props: IGameProps) {
 					)}
 
 					{(
-						playerState.gameState === GameState.GUESS
-						|| playerState.gameState === GameState.PLAY
+						isInGame(playerState)
 						&& (
 							currentPlayerInfo
 							&& activePlayerInfo
@@ -106,6 +110,15 @@ function Game (props: IGameProps) {
 	} else {
 		return <div></div>;
 	}
+}
+
+function isInGame (
+	playerState: PlayerState,
+): boolean {
+	return playerState.gameState === GameState.GUESS
+		|| playerState.gameState === GameState.PLAY
+		|| playerState.gameState === GameState.BATTLE_DONE
+		|| playerState.gameState === GameState.ROUND_DONE;
 }
 
 async function initConnection (

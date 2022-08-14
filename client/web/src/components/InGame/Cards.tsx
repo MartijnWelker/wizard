@@ -10,6 +10,7 @@ interface ICardsProps {
 	client: HathoraConnection,
 	sort?: boolean,
 	showName?: boolean
+	highlight?: CardType,
 }
 
 interface ICardsState {
@@ -104,7 +105,9 @@ export default class Cards
 									this.playCard(card);
 								}}>
 
-								<Card card={card}/>
+								<Card
+									card={card}
+									highlight={this.isHighlighted(card)}/>
 
 								{this.props.showName && isPlayedCard && (
 									<span className="label cards__player-name">
@@ -117,6 +120,20 @@ export default class Cards
 				)}
 			</ul>
 		);
+	}
+
+	private isHighlighted (
+		card: CardType,
+	): boolean {
+		const highlight = this.props.highlight;
+
+		if (highlight === undefined) {
+			return false;
+		}
+
+		return card.value === highlight.value
+			&& card.color === highlight.color
+			&& card.specialType === highlight.specialType;
 	}
 
 	private isPlayedCard (

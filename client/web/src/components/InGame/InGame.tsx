@@ -39,6 +39,14 @@ export default class InGame
 
 		const isYourTurn = activePlayerInfo.id === currentPlayerInfo.id;
 
+		console.log(
+			playerState,
+		);
+
+		console.log(
+			`Game state is ${GameState[playerState.gameState]}`,
+		);
+
 		return (
 			<div className={'ingame'}>
 				<div className="ingame__container">
@@ -105,7 +113,8 @@ export default class InGame
 									client={client}
 									cards={playerState.playedCards}
 									sort={false}
-									showName={true}/>
+									showName={true}
+									highlight={playerState.highestPlayedCard?.card}/>
 							</div>
 						)
 					}
@@ -143,18 +152,53 @@ export default class InGame
 						</div>
 					)}
 
-					<div className={`ingame__current-player ${isYourTurn ? 'ingame__current-player--you' : ''}`}>
-						{isYourTurn
-							? (
-								<p>
-									It's your turn!
-								</p>
-							) : (
-								<p>
-									Player <b>{activePlayerInfo.nickname}</b> is playing...
-								</p>
-							)}
-					</div>
+					{playerState.gameState === GameState.BATTLE_DONE && (
+						<div className={'ingame__round-done'}>
+							<span className="label">
+								Battle is done. Winner is <b>{playerState.highestPlayedCard?.nickname}</b>
+							</span>
+
+							<button
+								className="ingame__next-round-button button"
+								onClick={() => this.startNextRound()}>
+
+								Next battle
+							</button>
+						</div>
+					)}
+
+					{playerState.gameState === GameState.ROUND_DONE && (
+						<div className={'ingame__round-done'}>
+							<span className="label">
+								Round is done.
+							</span>
+
+							<button
+								className="ingame__next-round-button button"
+								onClick={() => this.startNextRound()}>
+
+								Next round
+							</button>
+						</div>
+					)}
+
+					{(
+						playerState.gameState === GameState.GUESS
+						|| playerState.gameState === GameState.PLAY
+					) && (
+						<div className={`ingame__current-player ${isYourTurn ? 'ingame__current-player--you' : ''}`}>
+							{isYourTurn
+								? (
+									<p>
+										It's your turn!
+									</p>
+								) : (
+									<p>
+										Player <b>{activePlayerInfo.nickname}</b> is playing...
+									</p>
+								)}
+						</div>
+					)}
 				</div>
 
 				<div className={'ingame__score-board-container'}>
@@ -183,6 +227,13 @@ export default class InGame
 		amountPlayers: number,
 	): number {
 		return 60 / amountPlayers;
+	}
+
+	private startNextRound (): void {
+		this.props.client.nextRound({})
+			.then(
+				response => response.type === 'error' && alert(response.error),
+			);
 	}
 
 	private autoPlay (): void {

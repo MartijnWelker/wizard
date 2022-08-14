@@ -5,6 +5,8 @@ types:
     - PLAY
     - GUESS
     - WINNER
+    - ROUND_DONE
+    - BATTLE_DONE
   Color:
     - RED
     - BLUE
@@ -46,6 +48,7 @@ types:
     winsThisRound: RoundPoints[]
     nickname: Nickname
     round: int
+    highestPlayedCard: PlayedCard?
 
 methods:
   joinGame:
@@ -56,6 +59,7 @@ methods:
   submitGuess:
     count: int
   autoPlay:
+  nextRound:
 
 auth:
   anonymous: { }
