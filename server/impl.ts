@@ -550,7 +550,7 @@ export class Impl
 			),
 			// Who's turn it is
 			turn: state.hands[state.turnIdx]?.userId,
-			winner: this.getWinners(
+			winners: this.getWinners(
 				state,
 			),
 			trump: state.trump,
@@ -590,9 +590,9 @@ export class Impl
 
 	private getWinners (
 		state: InternalState,
-	): string[] | undefined {
+	): string[] {
 		if (state.gameState !== GameState.WINNER) {
-			return undefined;
+			return [];
 		}
 
 		const highestPoints: {

@@ -5,7 +5,7 @@ import { GameState, PlayerState } from '../../../api/types';
 import { HathoraClient, HathoraConnection } from '../../.hathora/client';
 import InGame from './components/InGame/InGame';
 import Lobby from './components/Lobby';
-import Winner from './components/Winner';
+import Winners from './components/Winners';
 import './game.css';
 
 const client = new HathoraClient();
@@ -94,7 +94,7 @@ function Game (props: IGameProps) {
 					)}
 
 					{playerState.gameState === GameState.WINNER && (
-						<Winner
+						<Winners
 							playerState={playerState}
 							client={hathora}/>
 					)}

@@ -40,7 +40,7 @@ types:
     turn: UserId?
     playedCards: PlayedCard[]
     trump: Card[]
-    winner: UserId[]?
+    winners: Nickname[]
     gameState: GameState
     totalPoints: TotalPoints[]
     pointsPerRound: RoundPoints[][]

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PlayerState } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
 import ScoreBoard from './Scoreboard';
+import './winners.css';
 
 interface IWinnerProps {
 	playerState: PlayerState;
@@ -12,20 +13,25 @@ interface IWinnerProps {
 interface IWinnerState {
 }
 
-export default class Winner
+export default class Winners
 	extends React.Component<IWinnerProps, IWinnerState> {
 
 	public render () {
 		return (
 			<>
-				<p>
-					The winner(s) are: {this.props.playerState.winner!.join(', ')}
+				<p className="label">
+					The winner(s) are: {this.props.playerState.winners.join(', ')}
 				</p>
 
-				<ScoreBoard
-					playerState={this.props.playerState}/>
+				<div className="winners__score-board">
+					<ScoreBoard
+						playerState={this.props.playerState}/>
+				</div>
 
-				<Link to={'/'}>
+				<Link
+					className="button winners__back-button"
+					to={'/'}>
+
 					Back to home
 				</Link>
 			</>
