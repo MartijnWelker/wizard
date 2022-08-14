@@ -1,8 +1,13 @@
 .guess__button {
-    margin-left: 8px;
+    margin-top: 16px;
+}
+
+.guess__input {
+    margin-top: 8px;
 }
 
 .guess__cannot-say {
-    margin-left: 16px;
-    text-align: center;
+    margin-left: 8px;
+    font-size: 14px;
+    font-weight: normal;
 }

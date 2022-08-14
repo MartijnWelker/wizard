@@ -36,30 +36,34 @@ export default class Guess
 		const cannotSayAmount = this.getCannotSay();
 
 		return (
-			<div>
+			<section className="ui-card">
+				<h3>
+					Your guess
+
+					{cannotSayAmount !== null && (
+						<span className={'guess__cannot-say'}>
+							(Cannot say {this.getCannotSay()})
+						</span>
+					)}
+				</h3>
+
 				<input
 					type="number"
 					id="guessInput"
-					className="hive-input-btn-input"
+					className="guess__input"
 					value={this.state.guess}
 					onChange={(e) => this.setState({guess: Number(e.target.value)})}
 				/>
 
 				<button
-					className={'guess__button'}
+					className={'button guess__button'}
 					onClick={() => {
 						this.submitGuess(this.state.guess);
 					}}>
 
 					Guess
 				</button>
-
-				{cannotSayAmount !== null && (
-					<p className={'guess__cannot-say'}>
-						(Cannot say {this.getCannotSay()})
-					</p>
-				)}
-			</div>
+			</section>
 		);
 	}
 
