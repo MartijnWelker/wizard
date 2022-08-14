@@ -70,7 +70,7 @@ export class Impl
 			hands: [],
 			playedCards: [],
 			turnIdx: 0,
-			round: 1,
+			round: 20,
 			pointsPerRound: [],
 			totalPoints: {},
 			guesses: {},

@@ -1,5 +1,6 @@
 import React from 'react';
 import { PlayerState } from '../../../../api/types';
+import './score-board.css';
 
 interface IScoreBoardProps {
 	playerState: PlayerState,
@@ -25,9 +26,10 @@ export default class ScoreBoard
 		);
 
 		return (
-			<table>
+			<table className={'score-board'}>
 				<thead>
 				<tr>
+					<td></td>
 					{playerState.players.map(
 						player => <th key={player.nickname}>{player.nickname}</th>,
 					)}
@@ -38,14 +40,18 @@ export default class ScoreBoard
 					(
 						points,
 						roundIndex,
-					) => <tr key={`points-${roundIndex}`}>
+					) => <tr
+						className={'score-board__score-row'}
+						key={`points-${roundIndex}`}>
+
+						<td className={'score-board__round-number'}>
+							{roundIndex + 1}
+						</td>
 						{
 							points.map(
 								_points => <td
 									key={`points-${roundIndex}-${_points.nickname}`}
-									style={{
-										textAlign: 'right',
-									}}>
+									className={'score-board__score-cell'}>
 
 									{_points.points}
 								</td>,
@@ -54,6 +60,7 @@ export default class ScoreBoard
 					</tr>,
 				)}
 				<tr>
+					<td></td>
 					{totals.map(
 						(
 							total,

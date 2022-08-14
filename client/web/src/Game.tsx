@@ -3,11 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { GameState, PlayerState } from '../../../api/types';
 import { HathoraClient, HathoraConnection } from '../../.hathora/client';
-import Cards from './components/Cards';
-import Guess from './components/Guess';
+import InGame from './components/InGame/InGame';
 import Lobby from './components/Lobby';
-import Play from './components/Play';
-import ScoreBoard from './components/Scoreboard';
 import Winner from './components/Winner';
 import './game.css';
 
@@ -57,32 +54,9 @@ function Game (props: IGameProps) {
 			player => player.id === playerState.turn,
 		)!;
 
-		console.log(
-			'Current player',
-			currentPlayerInfo,
-		);
-
-		console.log(
-			'Active player',
-			activePlayerInfo,
-		);
-
 		return (
 			<>
-				<div
-					className={'tussie--title-header'}
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-					}}>
-					<div
-						style={{
-							display: 'flex',
-							justifyContent: 'center',
-						}}>
-					</div>
-				</div>
-				<div className={'tussie--game-container'}>
+				<div className={'game__container'}>
 					{playerState.gameState === GameState.LOBBY && (
 						<Lobby
 							isCreator={true}
@@ -90,60 +64,12 @@ function Game (props: IGameProps) {
 							client={hathora}/>
 					)}
 
-					{
-						(
-							playerState.gameState === GameState.GUESS
-							|| playerState.gameState === GameState.PLAY
-						) && (
-							<>
-								<div>
-									Round: {playerState.round}/{getTotalRounds(playerState.players.length)}
-								</div>
-								<div>
-									Total guessed: {getTotalGuessed(playerState.guesses)}/{playerState.round}
-								</div>
-							</>
-						)
-					}
-
-					{
-						(
-							playerState.gameState === GameState.GUESS
-							|| playerState.gameState === GameState.PLAY
-						) && (
-							playerState.trump.length > 0
-								? (
-									<>
-										<div>
-											Trump cards (only last one counts)
-										</div>
-										<Cards
-											active={false}
-											client={hathora}
-											cards={playerState.trump}/>
-									</>
-								)
-								: (
-									<div>
-										No trump card this round
-									</div>
-								)
-						)
-					}
-
-					{playerState.gameState === GameState.GUESS && (
-						<Guess
+					{(playerState.gameState === GameState.GUESS || playerState.gameState === GameState.PLAY) && (
+						<InGame
 							playerState={playerState}
+							client={hathora}
 							currentPlayerInfo={currentPlayerInfo}
-							activePlayerInfo={activePlayerInfo}
-							client={hathora}/>
-					)}
-					{playerState.gameState === GameState.PLAY && (
-						<Play
-							playerState={playerState}
-							currentPlayerInfo={currentPlayerInfo}
-							activePlayerInfo={activePlayerInfo}
-							client={hathora}/>
+							activePlayerInfo={activePlayerInfo}/>
 					)}
 
 					{playerState.gameState === GameState.WINNER && (
@@ -151,13 +77,6 @@ function Game (props: IGameProps) {
 							playerState={playerState}
 							client={hathora}/>
 					)}
-
-					{
-						playerState.gameState !== GameState.LOBBY && (
-							<ScoreBoard
-								playerState={playerState}/>
-						)
-					}
 				</div>
 			</>
 		);
@@ -206,24 +125,6 @@ async function initConnection (
 		);
 		setHathora(await connection);
 	}
-}
-
-function getTotalGuessed (
-	guesses: PlayerState['guesses'],
-): number {
-	return guesses.reduce(
-		(
-			total,
-			guess,
-		) => total + guess.guess,
-		0,
-	);
-}
-
-function getTotalRounds (
-	amountPlayers: number,
-): number {
-	return 60 / amountPlayers;
 }
 
 export default Game;

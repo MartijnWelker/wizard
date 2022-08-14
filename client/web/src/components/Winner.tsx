@@ -1,6 +1,7 @@
 import React from 'react';
 import { PlayerState } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
+import ScoreBoard from './Scoreboard';
 
 interface IWinnerProps {
 	playerState: PlayerState;
@@ -17,6 +18,9 @@ export default class Winner
 		return (
 			<>
 				<span>The winner(s) are: {this.props.playerState.winner!.join(', ')}</span>
+
+				<ScoreBoard
+					playerState={this.props.playerState}/>
 			</>
 		);
 	}

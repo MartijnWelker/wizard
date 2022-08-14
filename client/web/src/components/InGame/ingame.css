@@ -1,0 +1,81 @@
+.ingame {
+    padding: 32px;
+
+    display: grid;
+    grid-template:
+        "header header"
+        "trump score"
+        "played score"
+        "hand hand"
+        "guess guess"
+        "player player"
+        / 1fr 1fr;
+    grid-column-gap: 32px;
+    grid-row-gap: 16px;
+}
+
+.ingame__header {
+    grid-area: header;
+    display: grid;
+    grid-template:
+        "round guess"
+        "round guess"
+        / 1fr 1fr;
+
+    margin-bottom: 16px;
+}
+
+.ingame__header-round {
+    grid-area: round;
+}
+
+.ingame__header-guess {
+    grid-area: guess;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.ingame__header-current-player-guess {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.ingame__header-player {
+    grid-area: player;
+}
+
+.ingame__trump-cards {
+    grid-area: trump;
+}
+
+.ingame__played-cards {
+    grid-area: played;
+}
+
+.ingame__your-cards {
+    grid-area: hand;
+}
+
+.ingame__current-player {
+    grid-area: player;
+    border-radius: 3px;
+    padding: 16px;
+    border: 1px solid black;
+    background: #6c91d9;
+}
+
+.ingame__guess {
+    grid-area: guess;
+}
+
+.ingame__current-player--you {
+    background: #fcda49;
+}
+
+.ingame__score-board {
+    grid-area: score;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+}

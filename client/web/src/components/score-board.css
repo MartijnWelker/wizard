@@ -1,0 +1,26 @@
+.score-board {
+    border-radius: 6px;
+    border: 3px solid black;
+    border-collapse: collapse;
+}
+
+.score-board th,
+.score-board td {
+    padding: 4px 8px;
+}
+
+.score-board__round-number {
+    text-align: right;
+    font-size: 0.8rem;
+    font-style: italic;
+    border-right: 1px solid black;
+    padding: 4px 8px;
+}
+
+.score-board__score-row:nth-of-type(even) .score-board__score-cell {
+    background: lightgray;
+}
+
+.score-board__score-cell {
+    text-align: right;
+}

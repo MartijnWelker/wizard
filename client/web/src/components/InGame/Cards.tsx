@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card as CardType, Color, SpecialType } from '../../../../api/types';
-import { HathoraConnection } from '../../../.hathora/client';
+import { Card as CardType, Color, SpecialType } from '../../../../../api/types';
+import { HathoraConnection } from '../../../../.hathora/client';
 import Card from './Card';
 import './cards.css';
 
