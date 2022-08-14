@@ -16,8 +16,8 @@
     grid-column-gap: 32px;
     grid-row-gap: 16px;
 
-    background: url("../../../public/table.jpg") no-repeat center center;
-    background-size: cover;
+    background: rgb(92, 155, 64);
+    background: radial-gradient(circle, rgba(92, 155, 64, 1) 0%, rgba(37, 101, 51, 1) 100%);
 }
 
 .ingame__header {
