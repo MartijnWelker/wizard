@@ -1,5 +1,5 @@
 import { Response } from '../api/base';
-import { GameState, UserId } from '../api/types';
+import { GameState, SpecialType, UserId } from '../api/types';
 import { Context } from './.hathora/methods';
 import { InternalState } from './impl';
 import { countPoints, createDeck, formatCard, getHighestPlayedCard } from './util';
@@ -12,8 +12,18 @@ type TransitionFn<T> = (
 
 type State = {
 	nextStates: GameState[],
-	onEnter: TransitionFn<Response>,
-	onExit: TransitionFn<any>,
+	onEnter: (
+		state: InternalState,
+		ctx: Context,
+		userId: UserId,
+		previousState: GameState,
+	) => Response,
+	onExit: (
+		state: InternalState,
+		nextState: GameState,
+		ctx: Context,
+		userId: UserId,
+	) => any,
 }
 
 const noop = () => {
@@ -34,58 +44,57 @@ const states: Record<GameState, State> = {
 	},
 	[GameState.GUESS]: {
 		nextStates: [
+			GameState.ASK_TRUMP,
 			GameState.PLAY,
 		],
 		onEnter: (
 			state: InternalState,
 			ctx: Context,
+			userId: UserId,
+			previousState: GameState,
 		) => {
 			state.winsThisRound = {};
 			state.playedCards = [];
 			state.guesses = {};
 
-			state.deck = ctx.chance.shuffle(
-				createDeck(),
-			);
-
-			for (let i = 0; i < state.hands.length; i++) {
-				// Every round the first hand shifts 1 position
-				const hand = state.hands[(state.turnIdx + i) % state.hands.length];
-
-				for (let i = 0; i < state.round; i++) {
-					hand.cards.push(
-						state.deck.pop()!,
-					);
-				}
-			}
-
-			state.trump = [];
-
-			// Todo: The rules state that when a JOKER is picked the round is played without a trump card
-			// and when a WIZARD is picked the first player gets to decide
-			// For now we just programmed it like we usually play
-			while (true) {
-				const nextTrump = state.deck.pop();
-
-				if (nextTrump === undefined) {
-					break;
-				}
-
-				state.trump.push(
-					nextTrump,
+			if (previousState !== GameState.ASK_TRUMP) {
+				state.deck = ctx.chance.shuffle(
+					createDeck(),
 				);
 
-				if (nextTrump.specialType === undefined) {
-					break;
+				for (let i = 0; i < state.hands.length; i++) {
+					// Every round the first hand shifts 1 position
+					const hand = state.hands[(state.turnIdx + i) % state.hands.length];
+
+					for (let i = 0; i < state.round; i++) {
+						hand.cards.push(
+							state.deck.pop()!,
+						);
+					}
 				}
 
-				const formattedCard = formatCard(
-					nextTrump,
-				);
+				const trumpThisRound = state.deck.pop();
 
-				console.log(
-					`Picked trump card ${formattedCard} so picking another one`,
-				);
+				if (trumpThisRound !== undefined) {
+					state.trump = {
+						card: trumpThisRound,
+						trumpColor: trumpThisRound.color,
+					};
+
+					// If the card turned up is a Joker, it is turned down and there is no trump for that round.
+					if (trumpThisRound.specialType === SpecialType.WIZARD) {
+						// If the card turned up is a Wizard, the dealer chooses one of the four suits as the trump suit.
+						return transitionTo(
+							GameState.ASK_TRUMP,
+							state,
+							ctx,
+							userId,
+						);
+					}
+				} else {
+					// On the last round of each game all cards are dealt out so there is no trump.
+					state.trump = undefined;
+				}
 			}
 
 			console.log(
@@ -199,6 +208,23 @@ const states: Record<GameState, State> = {
 		onEnter: () => Response.ok(),
 		onExit: noop,
 	},
+	[GameState.ASK_TRUMP]: {
+		nextStates: [
+			GameState.GUESS,
+		],
+		onEnter: () => Response.ok(),
+		onExit: (
+			state: InternalState,
+		) => {
+			if (state.trump !== undefined && state.trump.trumpColor === undefined) {
+				return Response.error(
+					'Tried to leave "ASK_TRUMP" state but no trump color is set',
+				);
+			}
+
+			return Response.ok();
+		},
+	},
 };
 
 export function transitionTo (
@@ -224,6 +250,7 @@ export function transitionTo (
 
 	currStateObj.onExit(
 		state,
+		nextState,
 		ctx,
 		userId,
 	);
@@ -234,6 +261,7 @@ export function transitionTo (
 		state,
 		ctx,
 		userId,
+		currentState,
 	);
 
 }

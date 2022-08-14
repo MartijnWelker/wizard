@@ -21,60 +21,62 @@ export function getHighestPlayedCard (
 	state: InternalState,
 ): PlayedCard {
 	let highestPlayedCard: PlayedCard = state.playedCards[0];
-	const trump = state.trump[state.trump.length - 1];
 
-	if (highestPlayedCard.card.specialType !== SpecialType.WIZARD) {
-		for (let i = 1; i < state.playedCards.length; i++) {
-			const playedCard = state.playedCards[i];
-			const formattedCard = formatCard(
-				playedCard.card,
+	// There's no higher card than a first-player wizard
+	if (highestPlayedCard.card.specialType === SpecialType.WIZARD) {
+		return highestPlayedCard;
+	}
+
+	for (let i = 1; i < state.playedCards.length; i++) {
+		const playedCard = state.playedCards[i];
+		const formattedCard = formatCard(
+			playedCard.card,
+		);
+
+		if (playedCard.card.specialType === SpecialType.JOKER) {
+			console.log(
+				`Card ${formattedCard} played by ${playedCard.nickname} is a Joker, skipping`,
 			);
 
-			if (playedCard.card.specialType === SpecialType.JOKER) {
-				console.log(
-					`Card ${formattedCard} played by ${playedCard.nickname} is a Joker, skipping`,
-				);
+			continue;
+		}
 
-				continue;
-			}
+		if (playedCard.card.specialType === SpecialType.WIZARD) {
+			console.log(
+				`Card ${formattedCard} played by ${playedCard.nickname} is a Wizard, breaking out`,
+			);
 
-			if (playedCard.card.specialType === SpecialType.WIZARD) {
-				console.log(
-					`Card ${formattedCard} played by ${playedCard.nickname} is a Wizard, breaking out`,
-				);
+			highestPlayedCard = playedCard;
 
-				highestPlayedCard = playedCard;
+			break;
+		}
 
-				break;
-			}
-
-			if (
-				highestPlayedCard.card.specialType === SpecialType.JOKER
-				|| (
-					// If the user has played a higher card of the same color as the earlier card
-					playedCard.card.color === highestPlayedCard.card.color
-					&& playedCard.card.value > highestPlayedCard.card.value
+		if (
+			highestPlayedCard.card.specialType === SpecialType.JOKER
+			|| (
+				// If the user has played a higher card of the same color as the earlier card
+				playedCard.card.color === highestPlayedCard.card.color
+				&& playedCard.card.value > highestPlayedCard.card.value
+			)
+			|| (
+				state.trump
+				// Or the user has played a trump card
+				&& playedCard.card.color === state.trump.trumpColor
+				&& (
+					highestPlayedCard.card.color !== state.trump.trumpColor
+					|| playedCard.card.value > highestPlayedCard.card.value
 				)
-				|| (
-					trump !== undefined
-					// Or the user has played a trump card
-					&& playedCard.card.color === trump.color
-					&& (
-						highestPlayedCard.card.color !== trump.color
-						|| playedCard.card.value > highestPlayedCard.card.value
-					)
-				)
-			) {
-				const oldFormattedCard = formatCard(
-					highestPlayedCard.card,
-				);
+			)
+		) {
+			const oldFormattedCard = formatCard(
+				highestPlayedCard.card,
+			);
 
-				console.log(
-					`Highest card went from ${oldFormattedCard} to ${formattedCard}`,
-				);
+			console.log(
+				`Highest card went from ${oldFormattedCard} to ${formattedCard}`,
+			);
 
-				highestPlayedCard = playedCard;
-			}
+			highestPlayedCard = playedCard;
 		}
 	}
 

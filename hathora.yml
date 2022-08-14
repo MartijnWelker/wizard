@@ -7,6 +7,7 @@ types:
     - WINNER
     - ROUND_DONE
     - BATTLE_DONE
+    - ASK_TRUMP
   Color:
     - RED
     - BLUE
@@ -34,12 +35,15 @@ types:
   Guesses:
     nickname: Nickname
     guess: int
+  TrumpCard:
+    card: Card?
+    trumpColor: Color?
   PlayerState:
     hand: Card[]
     players: Player[]
     turn: UserId?
     playedCards: PlayedCard[]
-    trump: Card[]
+    trump: TrumpCard?
     winners: Nickname[]
     gameState: GameState
     totalPoints: TotalPoints[]
@@ -60,6 +64,8 @@ methods:
     count: int
   autoPlay:
   nextRound:
+  setTrumpColor:
+    color: Color
 
 auth:
   anonymous: { }

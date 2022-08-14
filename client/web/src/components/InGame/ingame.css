@@ -78,8 +78,23 @@
     grid-area: player;
 }
 
-.ingame__trump-cards {
+.ingame__trump-card-container {
     grid-area: trump;
+}
+
+.ingame__trump-card {
+    display: grid;
+    grid-template-columns: min-content min-content;
+    grid-gap: 16px;
+    align-items: flex-start;
+}
+
+.ingame__trump-card .label {
+    white-space: nowrap;
+}
+
+.ingame__trump-color {
+    margin-top: 16px;
 }
 
 .ingame__played-cards {

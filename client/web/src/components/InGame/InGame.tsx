@@ -1,7 +1,8 @@
 import React from 'react';
-import { GameState, Player, PlayerState } from '../../../../../api/types';
+import { Color, GameState, Player, PlayerState } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import ScoreBoard from '../Scoreboard';
+import { AskTrump } from './AskTrump';
 import Cards from './Cards';
 import Guess from './Guess';
 import './ingame.css';
@@ -78,19 +79,39 @@ export default class InGame
 						</div>
 					</div>
 
-					<div className={'ingame__trump-cards'}>
-						{playerState.trump.length > 0
+					<div className={'ingame__trump-card-container'}>
+						{playerState.trump !== undefined
 							? (
-								<>
-									<span className="label">
-										Trump cards (only last one counts)
-									</span>
+								<div className={'ingame__trump-card'}>
+									<div>
+										<span className="label">
+											Trump card:
+										</span>
 
-									<Cards
-										active={false}
-										client={client}
-										cards={playerState.trump}/>
-								</>
+										<Cards
+											active={false}
+											client={client}
+											cards={[playerState.trump.card!]}/>
+									</div>
+
+									{playerState.trump.trumpColor
+										? (
+											<div>
+												<span className="label">
+													Trump color:
+												</span>
+
+												<p className="label ingame__trump-color">
+													{Color[playerState.trump.trumpColor]}
+												</p>
+											</div>
+										)
+										: (
+											<span className="label">
+												No trump color this round
+											</span>
+										)}
+								</div>
 							)
 							: (
 								<span className="label">
@@ -147,6 +168,15 @@ export default class InGame
 							<Guess
 								playerState={playerState}
 								currentPlayerInfo={currentPlayerInfo}
+								activePlayerInfo={activePlayerInfo}
+								client={client}/>
+						</div>
+					)}
+
+					{playerState.gameState === GameState.ASK_TRUMP && (
+						<div className={'ingame__guess'}>
+							<AskTrump
+								playerState={playerState}
 								activePlayerInfo={activePlayerInfo}
 								client={client}/>
 						</div>

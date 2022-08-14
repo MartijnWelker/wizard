@@ -115,7 +115,8 @@ function Game (props: IGameProps) {
 function isInGame (
 	playerState: PlayerState,
 ): boolean {
-	return playerState.gameState === GameState.GUESS
+	return playerState.gameState === GameState.ASK_TRUMP
+		|| playerState.gameState === GameState.GUESS
 		|| playerState.gameState === GameState.PLAY
 		|| playerState.gameState === GameState.BATTLE_DONE
 		|| playerState.gameState === GameState.ROUND_DONE;

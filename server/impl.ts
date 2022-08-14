@@ -1,5 +1,5 @@
 import { Response } from '../api/base';
-import { Card, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, INextRoundRequest, IPlayCardRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, TotalPoints, UserId } from '../api/types';
+import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, INextRoundRequest, IPlayCardRequest, ISetTrumpColorRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, TotalPoints, UserId } from '../api/types';
 import { Context, Methods } from './.hathora/methods';
 import { transitionTo } from './GameStateMachine';
 import { amountOfCards, findHand, formatCard } from './util';
@@ -14,7 +14,10 @@ export type InternalState = {
 	gameState: GameState,
 	turnIdx: number,
 	round: number,
-	trump: Card[],
+	trump: {
+		card: Card,
+		trumpColor: Color | undefined,
+	} | undefined,
 	playedCards: PlayedCard[],
 	pointsPerRound: Record<Nickname, number>[],
 	totalPoints: Record<Nickname, number>,
@@ -43,7 +46,7 @@ export class Impl
 			gameState: GameState.LOBBY,
 			winsThisRound: {},
 			started: false,
-			trump: [],
+			trump: undefined,
 			nicknames: new Map<UserId, Nickname>(),
 			highestPlayedCard: undefined,
 		};
@@ -97,6 +100,34 @@ export class Impl
 				'A minimum of 3 players is required',
 			);
 		}
+
+		return transitionTo(
+			GameState.GUESS,
+			state,
+			ctx,
+			userId,
+		);
+	}
+
+	public setTrumpColor (
+		state: InternalState,
+		userId: UserId,
+		ctx: Context,
+		request: ISetTrumpColorRequest,
+	): Response {
+		if (state.gameState !== GameState.ASK_TRUMP) {
+			return Response.error(
+				'Game is not in ASK_TRUMP state',
+			);
+		}
+
+		if (state.trump === undefined) {
+			return Response.error(
+				'Tried to set trump color but there\'s no trump',
+			);
+		}
+
+		state.trump.trumpColor = request.color;
 
 		return transitionTo(
 			GameState.GUESS,
