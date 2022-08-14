@@ -95,10 +95,9 @@ export default class InGame
 							<Cards
 								active={false}
 								client={client}
-								cards={playerState.playedCards.map(
-									playedCard => playedCard.card,
-								)}
-								sort={true}/>
+								cards={playerState.playedCards}
+								sort={false}
+								showName={true}/>
 						</div>
 					)
 				}

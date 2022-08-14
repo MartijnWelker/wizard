@@ -109,7 +109,7 @@ class Lobby
 		this.props.client.joinGame({nickname})
 			.then((result) => {
 				if (result.type === 'error') {
-					console.error(result.error);
+					alert(result.error);
 				}
 			});
 	};
@@ -118,7 +118,7 @@ class Lobby
 		this.props.client.startGame({})
 			.then((result) => {
 				if (result.type === 'error') {
-					console.error(result.error);
+					alert(result.error);
 				}
 			});
 	};

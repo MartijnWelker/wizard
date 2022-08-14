@@ -1,14 +1,15 @@
 import React from 'react';
-import { Card as CardType, Color, SpecialType } from '../../../../../api/types';
+import { Card as CardType, Color, PlayedCard, SpecialType } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import Card from './Card';
 import './cards.css';
 
 interface ICardsProps {
-	cards: CardType[],
+	cards: (CardType | PlayedCard)[],
 	active: boolean,
 	client: HathoraConnection,
 	sort?: boolean,
+	showName?: boolean
 }
 
 interface ICardsState {
@@ -37,6 +38,13 @@ export default class Cards
 					cardA,
 					cardB,
 				) => {
+					if (this.isPlayedCard(cardA)) {
+						cardA = cardA.card;
+					}
+					if (this.isPlayedCard(cardB)) {
+						cardB = cardB.card;
+					}
+
 					if (
 						(
 							cardA.specialType !== undefined
@@ -77,7 +85,16 @@ export default class Cards
 		return (
 			<ul className={'cards__cards-list'}>
 				{cards.map(
-					card => {
+					_card => {
+						let card: CardType;
+						const isPlayedCard = this.isPlayedCard(_card);
+
+						if (isPlayedCard) {
+							card = _card.card;
+						} else {
+							card = _card;
+						}
+
 						return <li
 							key={this.getCardHash(card)}>
 
@@ -88,6 +105,12 @@ export default class Cards
 								}}>
 
 								<Card card={card}/>
+
+								{this.props.showName && isPlayedCard && (
+									<span>
+										{_card.nickname}
+									</span>
+								)}
 							</button>
 						</li>;
 					},
@@ -95,6 +118,12 @@ export default class Cards
 			</ul>
 		);
 	}
+
+	private isPlayedCard (
+		card: ICardsProps['cards'][number],
+	): card is PlayedCard {
+		return 'card' in card;
+	};
 
 	private playCard = (card: CardType) => {
 		if (!this.props.active) {
@@ -104,7 +133,7 @@ export default class Cards
 		this.props.client.playCard({card})
 			.then((result) => {
 				if (result.type === 'error') {
-					console.error(result.error);
+					alert(result.error);
 				}
 			});
 	};

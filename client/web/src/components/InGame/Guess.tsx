@@ -97,7 +97,7 @@ export default class Guess
 		this.props.client.submitGuess({count: guess})
 			.then((result) => {
 				if (result.type === 'error') {
-					console.error(result.error);
+					alert(result.error);
 				}
 			});
 	}
