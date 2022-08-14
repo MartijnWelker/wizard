@@ -430,7 +430,10 @@ export class Impl
 	): Response {
 		userId = state.hands[state.turnIdx].userId;
 
-		if (state.gameState === GameState.ROUND_DONE) {
+		if (
+			state.gameState === GameState.ROUND_DONE
+			|| state.gameState === GameState.BATTLE_DONE
+		) {
 			return this.nextRound(
 				state,
 				userId,
