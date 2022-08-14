@@ -379,7 +379,7 @@ export class Impl
 
 			state.playedCards = [];
 			state.highestPlayedCard = undefined;
-			state.gameState = GameState.GUESS;
+			state.gameState = GameState.PLAY;
 
 			return Response.ok();
 		}
