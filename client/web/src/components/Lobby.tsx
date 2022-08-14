@@ -61,7 +61,7 @@ export default function (
 				value={nickname}
 				onChange={(e) => setNickname(e.target.value)}
 			/>
-			
+
 			<button
 				className="button"
 				onClick={() => {

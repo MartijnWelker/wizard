@@ -19,6 +19,16 @@ body,
     height: 100%;
 }
 
+@media (max-width: 560px) {
+    html,
+    body,
+    #root {
+        width: auto;
+        height: auto;
+    }
+}
+
+
 html {
     background: rgb(92, 155, 64);
     background: radial-gradient(circle, rgba(92, 155, 64, 1) 0%, rgba(37, 101, 51, 1) 100%);
@@ -32,6 +42,13 @@ html {
     padding: 4px 8px;
     background: white;
     border-radius: 3px;
+}
+
+@media (max-width: 560px) {
+    .label {
+        display: block;
+        width: 100%;
+    }
 }
 
 .button {

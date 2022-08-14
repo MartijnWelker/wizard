@@ -1,7 +1,6 @@
 .ingame {
-    width: 100%;
     height: 100%;
-    padding: 32px;
+    width: 100%;
 
     display: grid;
     grid-template-columns: 1fr min-content;
@@ -22,8 +21,8 @@
         "trump trump"
         "played played" 1fr
         "guess guess" 1fr
-        "player player"
         "hand hand"
+        "player player"
         "autoplay autoplay"
         / 1fr 1fr;
     grid-column-gap: 32px;
@@ -133,5 +132,24 @@
     .ingame__score-board-container {
         justify-self: center;
         margin-top: 32px;
+    }
+}
+
+@media (max-width: 560px) {
+    .ingame__container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ingame__header {
+        grid-template:
+        "round"
+        "guess"
+        / 1fr;
+    }
+
+    .ingame__header-guesses {
+        margin-top: 32px;
+        align-items: flex-start;
     }
 }
