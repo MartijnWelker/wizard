@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Color, Player, PlayerState } from '../../../../../api/types';
+import { Color, PlayerState } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import './ask-trump.css';
 
 export function AskTrump (
 	props: {
 		playerState: PlayerState,
-		activePlayerInfo: Player,
 		client: HathoraConnection,
 	},
 ) {

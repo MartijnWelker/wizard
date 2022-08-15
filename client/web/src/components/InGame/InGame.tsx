@@ -173,14 +173,15 @@ export default class InGame
 						</div>
 					)}
 
-					{playerState.gameState === GameState.ASK_TRUMP && (
-						<div className={'ingame__guess'}>
-							<AskTrump
-								playerState={playerState}
-								activePlayerInfo={activePlayerInfo}
-								client={client}/>
-						</div>
-					)}
+					{
+						playerState.gameState === GameState.ASK_TRUMP &&
+						activePlayerInfo.id === currentPlayerInfo.id && (
+							<div className={'ingame__guess'}>
+								<AskTrump
+									playerState={playerState}
+									client={client}/>
+							</div>
+						)}
 
 					{playerState.gameState === GameState.BATTLE_DONE && (
 						<div className={'ingame__round-done'}>
