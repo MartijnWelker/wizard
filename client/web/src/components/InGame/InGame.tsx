@@ -1,8 +1,9 @@
 import React from 'react';
-import { Color, GameState, Player, PlayerState } from '../../../../../api/types';
+import { Color, GameState, PlayerState } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import ScoreBoard from '../Scoreboard';
 import { AskTrump } from './AskTrump';
+import { colors } from './Card';
 import Cards from './Cards';
 import Guess from './Guess';
 import './ingame.css';
@@ -10,8 +11,6 @@ import './ingame.css';
 interface IInGameProps {
 	playerState: PlayerState,
 	client: HathoraConnection,
-	currentPlayerInfo: Player,
-	activePlayerInfo: Player,
 	debugMode: boolean,
 }
 
@@ -25,9 +24,15 @@ export default class InGame
 		const {
 			client,
 			playerState,
-			currentPlayerInfo,
-			activePlayerInfo,
 		} = this.props;
+
+		const currentPlayerInfo = playerState?.players.find(
+			player => player.nickname === playerState.nickname,
+		)!;
+
+		const activePlayerInfo = playerState?.players.find(
+			player => player.id === playerState.turn,
+		)!;
 
 		playerState.guesses.sort(
 			(
@@ -38,19 +43,18 @@ export default class InGame
 			),
 		);
 
-		const isYourTurn = activePlayerInfo.id === currentPlayerInfo.id;
-
-		console.log(
-			playerState,
-		);
-
-		console.log(
-			`Game state is ${GameState[playerState.gameState]}`,
-		);
+		const isYourTurn = currentPlayerInfo && activePlayerInfo.id === currentPlayerInfo.id;
+		const canPlay = playerState.gameState === GameState.PLAY && isYourTurn;
 
 		return (
 			<div className={'ingame'}>
 				<div className="ingame__container">
+					{!currentPlayerInfo && (
+						<div className="label ingame__spectator-warning">
+							You are currently spectating...
+						</div>
+					)}
+
 					<div className={'ingame__header'}>
 						<div className={'ingame__header-round'}>
 							<span className="label">
@@ -67,12 +71,12 @@ export default class InGame
 									guess => <li
 										key={`guess-${guess.nickname}`}
 										className={
-											guess.nickname === currentPlayerInfo.nickname
+											guess.nickname === currentPlayerInfo?.nickname
 												? 'ingame__header-guess label ingame__header-guess--current-player'
 												: 'ingame__header-guess label'
 										}>
 
-										{guess.nickname}: {guess.guess} {guess.nickname === currentPlayerInfo.nickname && ('(you)')}
+										{guess.nickname}: {guess.guess} {currentPlayerInfo && guess.nickname === currentPlayerInfo.nickname && ('(you)')}
 									</li>,
 								)}
 							</ul>
@@ -83,7 +87,7 @@ export default class InGame
 						{playerState.trump !== undefined
 							? (
 								<div className={'ingame__trump-card'}>
-									<div>
+									<div className="ingame__trump-card-card">
 										<span className="label">
 											Trump card:
 										</span>
@@ -96,18 +100,23 @@ export default class InGame
 
 									{playerState.trump.trumpColor !== undefined
 										? (
-											<div>
+											<div className="ingame__trump-card-color">
 												<span className="label">
 													Trump color:
 												</span>
 
-												<p className="label ingame__trump-color">
+												<p
+													className="label ingame__trump-color"
+													style={{
+														backgroundColor: colors[playerState.trump.trumpColor],
+													}}>
+
 													{Color[playerState.trump.trumpColor]}
 												</p>
 											</div>
 										)
 										: (
-											<span className="label">
+											<span className="label ingame__trump-color">
 												No trump color this round
 											</span>
 										)}
@@ -143,11 +152,11 @@ export default class InGame
 					{playerState.hand.length > 0 && (
 						<div className={'ingame__your-cards'}>
 							<span className="label">
-								Your cards:
+								Your cards: {canPlay && (<span>(tap to play)</span>)}
 							</span>
 
 							<Cards
-								active={playerState.gameState === GameState.PLAY && activePlayerInfo.id === currentPlayerInfo.id}
+								active={canPlay}
 								cards={playerState.hand}
 								client={client}
 								sort={true}/>
@@ -163,18 +172,20 @@ export default class InGame
 						</button>
 					)}
 
-					{playerState.gameState === GameState.GUESS && (
-						<div className={'ingame__guess'}>
-							<Guess
-								playerState={playerState}
-								currentPlayerInfo={currentPlayerInfo}
-								activePlayerInfo={activePlayerInfo}
-								client={client}/>
-						</div>
-					)}
+					{playerState.gameState === GameState.GUESS &&
+						currentPlayerInfo && (
+							<div className={'ingame__guess'}>
+								<Guess
+									playerState={playerState}
+									currentPlayerInfo={currentPlayerInfo}
+									activePlayerInfo={activePlayerInfo}
+									client={client}/>
+							</div>
+						)}
 
 					{
 						playerState.gameState === GameState.ASK_TRUMP &&
+						currentPlayerInfo &&
 						activePlayerInfo.id === currentPlayerInfo.id && (
 							<div className={'ingame__guess'}>
 								<AskTrump
@@ -183,35 +194,37 @@ export default class InGame
 							</div>
 						)}
 
-					{playerState.gameState === GameState.BATTLE_DONE && (
-						<div className={'ingame__round-done'}>
-							<span className="label">
-								Battle is done. Winner is <b>{playerState.highestPlayedCard?.nickname}</b>
-							</span>
+					{playerState.gameState === GameState.BATTLE_DONE &&
+						currentPlayerInfo && (
+							<div className={'ingame__round-done'}>
+								<span className="label">
+									Battle is done. Winner is <b>{playerState.highestPlayedCard?.nickname}</b>
+								</span>
 
-							<button
-								className="ingame__next-round-button button"
-								onClick={() => this.startNextRound()}>
+								<button
+									className="ingame__next-round-button button"
+									onClick={() => this.startNextRound()}>
 
-								Next battle
-							</button>
-						</div>
-					)}
+									Next battle
+								</button>
+							</div>
+						)}
 
-					{playerState.gameState === GameState.ROUND_DONE && (
-						<div className={'ingame__round-done'}>
-							<span className="label">
-								Round is done.
-							</span>
+					{playerState.gameState === GameState.ROUND_DONE &&
+						currentPlayerInfo && (
+							<div className={'ingame__round-done'}>
+								<span className="label">
+									Round is done.
+								</span>
 
-							<button
-								className="ingame__next-round-button button"
-								onClick={() => this.startNextRound()}>
+								<button
+									className="ingame__next-round-button button"
+									onClick={() => this.startNextRound()}>
 
-								Next round
-							</button>
-						</div>
-					)}
+									Next round
+								</button>
+							</div>
+						)}
 
 					{(
 						playerState.gameState === GameState.GUESS

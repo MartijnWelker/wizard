@@ -10,7 +10,7 @@ interface ICardProps {
 interface ICardState {
 }
 
-const colors = {
+export const colors = {
 	[Color.RED]: '#e16c6c',
 	[Color.GREEN]: '#70bd56',
 	[Color.BLUE]: '#6c91d9',

@@ -59,14 +59,6 @@ function Game (props: IGameProps) {
 		!is404
 		&& path !== '/game'
 	) {
-		const currentPlayerInfo = playerState?.players.find(
-			player => player.nickname === playerState.nickname,
-		)!;
-
-		const activePlayerInfo = playerState?.players.find(
-			player => player.id === playerState.turn,
-		)!;
-
 		return (
 			<>
 				<div className={'game__container'}>
@@ -78,18 +70,10 @@ function Game (props: IGameProps) {
 							debugMode={debugMode}/>
 					)}
 
-					{(
-						isInGame(playerState)
-						&& (
-							currentPlayerInfo
-							&& activePlayerInfo
-						)
-					) && (
+					{isInGame(playerState) && (
 						<InGame
 							playerState={playerState}
 							client={hathora}
-							currentPlayerInfo={currentPlayerInfo}
-							activePlayerInfo={activePlayerInfo}
 							debugMode={debugMode}/>
 					)}
 
@@ -108,7 +92,9 @@ function Game (props: IGameProps) {
 			</div>
 		);
 	} else {
-		return <div></div>;
+		return (
+			<div></div>
+		);
 	}
 }
 
@@ -129,12 +115,12 @@ async function initConnection (
 	onStateChange: (state: PlayerState) => void,
 	debugMode: boolean,
 ): Promise<void> {
-	const storedUserData = sessionStorage.getItem('user');
+	const storedUserData = localStorage.getItem('user');
 	const token: string = storedUserData
 		? JSON.parse(storedUserData).token
 		: await client.loginAnonymous()
 			.then((t) => {
-				sessionStorage.setItem(
+				localStorage.setItem(
 					'user',
 					JSON.stringify({token: t}),
 				);
