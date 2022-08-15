@@ -1,5 +1,6 @@
 import { QRCodeSVG } from 'qrcode.react';
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
+import { UserData } from '../../../../api/base';
 import { PlayerState } from '../../../../api/types';
 import { HathoraConnection } from '../../../.hathora/client';
 import './lobby.css';
@@ -9,13 +10,12 @@ interface ILobbyProps {
 	playerState: PlayerState,
 	client: HathoraConnection,
 	debugMode: boolean,
+	user: UserData,
 }
 
 export default function Lobby (
 	props: ILobbyProps,
 ) {
-	const [nickname, setNickname] = useState('');
-
 	const {
 		isCreator,
 		playerState,
@@ -27,8 +27,24 @@ export default function Lobby (
 		document.baseURI,
 	);
 
-	console.log(
-		playerState,
+	const isPlaying = players.some(
+		player => player.id === props.user.id,
+	);
+
+	useEffect(
+		() => {
+			if (
+				!isPlaying
+				&& playerState.players.length <= 6
+			) {
+				joinGame(
+					props.client,
+					props.user,
+				);
+			}
+		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
 	);
 
 	return (
@@ -68,36 +84,9 @@ export default function Lobby (
 				</button>
 			</div>
 
-			<div className="ui-card lobby__join-card">
-				<label htmlFor="nicknameInput">
-					Nickname:
-				</label>
-
-				<input
-					type="text"
-					id="nicknameInput"
-					className="hive-input-btn-input"
-					value={nickname}
-					onChange={(e) => setNickname(e.target.value)}
-				/>
-
-				<button
-					className="button lobby__game-join-button"
-					onClick={() => {
-						if (players.find((p) => p.nickname === playerState.nickname) === undefined && nickname) {
-							joinGame(
-								props.client,
-								nickname,
-							);
-						}
-					}}>
-
-					Join Game
-				</button>
-			</div>
-
 			<div className="ui-card lobby__current-players">
 				<h4 style={{margin: 2}}>Current players:</h4>
+
 				{players.map((
 					p,
 					i,
@@ -115,15 +104,12 @@ export default function Lobby (
 
 				{players.length < 3 && <h5>Waiting on more players to join the game</h5>}
 				{players.length >= 3 &&
-					(isCreator ? <h5>Press "Play!" to start the game</h5> :
-						<h5>Waiting for host to start the game!</h5>)}
-				{players.length > 6 &&
-					(isCreator ? (
-						<h5>Too many players to start! Need to remove players (max 6)</h5>
-					) : (
-						<h5>Waiting for host to start the game!</h5>
-					))}
-				{isCreator && players.length >= 3 && players.length <= 6 && (
+					(isCreator && isPlaying
+							? <h5>Press "Play!" to start the game</h5>
+							: <h5>Waiting for host to start the game!</h5>
+					)
+				}
+				{isCreator && players.length >= 3 && players.length <= 6 && isPlaying && (
 					<button
 						className="button"
 						onClick={() => playGame(props.client)}
@@ -139,9 +125,9 @@ export default function Lobby (
 
 function joinGame (
 	client: HathoraConnection,
-	nickname: string,
+	user: UserData,
 ) {
-	client.joinGame({nickname})
+	client.joinGame({nickname: user.name})
 		.then((result) => {
 			if (result.type === 'error') {
 				alert(result.error);

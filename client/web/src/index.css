@@ -113,3 +113,7 @@ input:focus-visible {
     padding: 16px;
     background: #fff
 }
+
+.ui-card--no-height {
+    min-height: auto;
+}

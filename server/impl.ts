@@ -70,6 +70,12 @@ export class Impl
 			);
 		}
 
+		if (state.nicknames.has(userId)) {
+			return Response.error(
+				`You already joined this lobby`,
+			);
+		}
+
 		state.nicknames.set(
 			userId,
 			request.nickname,

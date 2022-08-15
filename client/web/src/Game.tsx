@@ -1,6 +1,7 @@
 import { History } from 'history';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { UserData } from '../../../api/base';
 import { GameState, PlayerState } from '../../../api/types';
 import { HathoraClient, HathoraConnection } from '../../.hathora/client';
 import InGame from './components/InGame/InGame';
@@ -8,12 +9,15 @@ import Lobby from './components/Lobby';
 import Winners from './components/Winners';
 import './game.css';
 
-const client = new HathoraClient();
-
 interface IGameProps {
+	client: HathoraClient;
 }
 
 function Game (props: IGameProps) {
+	const {
+		client,
+	} = props;
+
 	const debugMode = new URLSearchParams(
 		window.location.search,
 	).get(
@@ -21,20 +25,24 @@ function Game (props: IGameProps) {
 	) === 'true';
 
 	const [playerState, setPlayerState] = useState<PlayerState | undefined>(undefined);
-	const [hathora, setHathora] = useState<HathoraConnection | undefined>(undefined);
+	const [gameConnection, setGameConnection] = useState<HathoraConnection | undefined>(undefined);
 	const [is404, setIs404] = useState<boolean>(false);
+	const [token, setToken] = useState('');
+
 	const path = useLocation().pathname;
 	const history = useHistory();
 
 	useEffect(
 		() => {
-			if (hathora === undefined) {
+			if (gameConnection === undefined) {
 				initConnection(
 					path,
 					history,
-					setHathora,
+					setGameConnection,
 					setPlayerState,
+					setToken,
 					debugMode,
+					client,
 				)
 					.catch((e) => {
 						console.error(
@@ -49,16 +57,22 @@ function Game (props: IGameProps) {
 			path,
 			history,
 			debugMode,
-			hathora,
+			gameConnection,
+			client,
 		],
 	);
 
 	if (
-		playerState
-		&& hathora &&
-		!is404
+		token
+		&& playerState
+		&& gameConnection
+		&& !is404
 		&& path !== '/game'
 	) {
+		const user: UserData = HathoraClient.getUserFromToken(
+			token,
+		);
+
 		return (
 			<>
 				<div className={'game__container'}>
@@ -66,21 +80,22 @@ function Game (props: IGameProps) {
 						<Lobby
 							isCreator={true}
 							playerState={playerState}
-							client={hathora}
+							client={gameConnection}
+							user={user}
 							debugMode={debugMode}/>
 					)}
 
 					{isInGame(playerState) && (
 						<InGame
 							playerState={playerState}
-							client={hathora}
+							client={gameConnection}
 							debugMode={debugMode}/>
 					)}
 
 					{playerState.gameState === GameState.WINNER && (
 						<Winners
 							playerState={playerState}
-							client={hathora}/>
+							client={gameConnection}/>
 					)}
 				</div>
 			</>
@@ -111,22 +126,27 @@ function isInGame (
 async function initConnection (
 	path: string,
 	history: History,
-	setHathora: (client: HathoraConnection) => void,
+	setGameConnection: (gameConnection: HathoraConnection) => void,
 	onStateChange: (state: PlayerState) => void,
+	setToken: (token: string) => void,
 	debugMode: boolean,
+	client: HathoraClient,
 ): Promise<void> {
-	const storedUserData = localStorage.getItem('user');
-	const token: string = storedUserData
-		? JSON.parse(storedUserData).token
-		: await client.loginAnonymous()
-			.then((t) => {
-				localStorage.setItem(
-					'user',
-					JSON.stringify({token: t}),
-				);
-				return t;
-			});
+	const storedUserData = sessionStorage.getItem('user');
 
+	if (!storedUserData) {
+		history.replace(
+			'/',
+		);
+
+		return;
+	}
+
+	const token: string = JSON.parse(storedUserData).token;
+
+	setToken(token);
+
+	// If we don't pass a gameId we start a new game
 	if (path === '/game') {
 		const stateId = await client.create(
 			token,
@@ -137,15 +157,20 @@ async function initConnection (
 			`/game/${stateId}?debugMode=${debugMode}`,
 		);
 	} else {
-		const stateId = path.split('/')
+		const stateId = path
+			.split('/')
 			.pop()!;
+
 		const connection = client.connect(
 			token,
 			stateId,
 			({state}) => onStateChange(state),
 			console.error,
 		);
-		setHathora(await connection);
+
+		setGameConnection(
+			await connection,
+		);
 	}
 }
 

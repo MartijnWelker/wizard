@@ -68,7 +68,7 @@ methods:
     color: Color
 
 auth:
-  anonymous: { }
+  nickname: { }
 
 userState: PlayerState
 error: string
