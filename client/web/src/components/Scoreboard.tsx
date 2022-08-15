@@ -12,10 +12,6 @@ interface IScoreBoardState {
 export default class ScoreBoard
 	extends React.Component<IScoreBoardProps, IScoreBoardState> {
 
-	constructor (props: IScoreBoardProps) {
-		super(props);
-	}
-
 	public render () {
 		const {
 			playerState,

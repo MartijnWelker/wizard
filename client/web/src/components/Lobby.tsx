@@ -11,7 +11,7 @@ interface ILobbyProps {
 	debugMode: boolean,
 }
 
-export default function (
+export default function Lobby (
 	props: ILobbyProps,
 ) {
 	const [nickname, setNickname] = useState('');
