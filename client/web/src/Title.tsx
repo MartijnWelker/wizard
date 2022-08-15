@@ -17,7 +17,7 @@ export default function Title (
 
 	useEffect(
 		() => {
-			const storedToken = sessionStorage.getItem(
+			const storedToken = localStorage.getItem(
 				'user',
 			);
 
@@ -151,7 +151,7 @@ async function generateToken (
 		nickname,
 	);
 
-	sessionStorage.setItem(
+	localStorage.setItem(
 		'user',
 		JSON.stringify({token}),
 	);
