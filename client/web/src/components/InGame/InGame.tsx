@@ -94,7 +94,7 @@ export default class InGame
 											cards={[playerState.trump.card!]}/>
 									</div>
 
-									{playerState.trump.trumpColor
+									{playerState.trump.trumpColor !== undefined
 										? (
 											<div>
 												<span className="label">
