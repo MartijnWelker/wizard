@@ -386,6 +386,17 @@ export class Impl
 	): Response {
 		userId = state.hands[state.turnIdx].userId;
 
+		if (state.gameState === GameState.ROUND_DONE) {
+			return this.setTrumpColor(
+				state,
+				userId,
+				ctx,
+				{
+					color: Color.RED,
+				},
+			);
+		}
+
 		if (
 			state.gameState === GameState.ROUND_DONE
 			|| state.gameState === GameState.BATTLE_DONE
