@@ -1,13 +1,9 @@
 .card {
     border-radius: 6px;
-    width: 50px;
-    height: 100px;
-    padding: 2px;
-    border-color: black;
-    border-width: 3px;
-    border-style: solid;
-    font-size: 30px;
-    background: white;
+    width: 80px;
+    height: 125px;
+    border-radius: 12px;
+    background: url('../../../public/css_sprites.png');
 }
 
 .card--highlight {
@@ -23,4 +19,249 @@
     color: white;
     text-shadow: 2px 2px black;
     border-radius: 3px;
+}
+
+
+.card--YELLOW_4 {
+    background-position: -0 -0;
+}
+
+.card--RED_1 {
+    background-position: -81px -0;
+}
+
+.card--RED_10 {
+    background-position: -162px -0;
+}
+
+.card--Wizard_3 {
+    background-position: -243px -0;
+}
+
+.card--YELLOW_12 {
+    background-position: -324px -0;
+}
+
+.card--Wizard_0 {
+    background-position: -405px -0;
+}
+
+.card--BLUE_6 {
+    background-position: -486px -0;
+}
+
+.card--RED_3 {
+    background-position: -567px -0;
+}
+
+.card--RED_2 {
+    background-position: -648px -0;
+}
+
+.card--RED_11 {
+    background-position: -729px -0;
+}
+
+.card--YELLOW_10 {
+    background-position: -810px -0;
+}
+
+.card--YELLOW_2 {
+    background-position: -891px -0;
+}
+
+.card--GREEN_4 {
+    background-position: -972px -0;
+}
+
+.card--YELLOW_5 {
+    background-position: -1053px -0;
+}
+
+.card--WIzard_1 {
+    background-position: -1134px -0;
+}
+
+.card--RED_6 {
+    background-position: -1215px -0;
+}
+
+.card--YELLOW_9 {
+    background-position: -1296px -0;
+}
+
+.card--RED_4 {
+    background-position: -1377px -0;
+}
+
+.card--GREEN_6 {
+    background-position: -1458px -0;
+}
+
+.card--YELLOW_7 {
+    background-position: -1539px -0;
+}
+
+.card--Back {
+    background-position: -1620px -0;
+}
+
+.card--RED_13 {
+    background-position: -1701px -0;
+}
+
+.card--Joker_2 {
+    background-position: -1782px -0;
+}
+
+.card--GREEN_12 {
+    background-position: -1863px -0;
+}
+
+.card--BLUE_13 {
+    background-position: -1944px -0;
+}
+
+.card--BLUE_11 {
+    background-position: -2025px -0;
+}
+
+.card--BLUE_3 {
+    background-position: -2106px -0;
+}
+
+.card--RED_12 {
+    background-position: -2187px -0;
+}
+
+.card--BLUE_1 {
+    background-position: -2268px -0;
+}
+
+.card--RED_7 {
+    background-position: -2349px -0;
+}
+
+.card--YELLOW_1 {
+    background-position: -2430px -0;
+}
+
+.card--YELLOW_6 {
+    background-position: -2511px -0;
+}
+
+.card--BLUE_10 {
+    background-position: -2592px -0;
+}
+
+.card--GREEN_8 {
+    background-position: -2673px -0;
+}
+
+.card--Joker_3 {
+    background-position: -2754px -0;
+}
+
+.card--YELLOW_3 {
+    background-position: -2835px -0;
+}
+
+.card--RED_8 {
+    background-position: -2916px -0;
+}
+
+.card--RED_9 {
+    background-position: -2997px -0;
+}
+
+.card--YELLOW_8 {
+    background-position: -3078px -0;
+}
+
+.card--BLUE_12 {
+    background-position: -3159px -0;
+}
+
+.card--BLUE_7 {
+    background-position: -3240px -0;
+}
+
+.card--GREEN_9 {
+    background-position: -3321px -0;
+}
+
+.card--Joker_1 {
+    background-position: -3402px -0;
+}
+
+.card--GREEN_1 {
+    background-position: -3483px -0;
+}
+
+.card--Wizard_2 {
+    background-position: -3564px -0;
+}
+
+.card--YELLOW_11 {
+    background-position: -3645px -0;
+}
+
+.card--GREEN_3 {
+    background-position: -3726px -0;
+}
+
+.card--YELLOW_13 {
+    background-position: -3807px -0;
+}
+
+.card--GREEN_5 {
+    background-position: -3888px -0;
+}
+
+.card--BLUE_9 {
+    background-position: -3969px -0;
+}
+
+.card--RED_5 {
+    background-position: -4050px -0;
+}
+
+.card--GREEN_2 {
+    background-position: -4131px -0;
+}
+
+.card--GREEN_13 {
+    background-position: -4212px -0;
+}
+
+.card--GREEN_7 {
+    background-position: -4293px -0;
+}
+
+.card--BLUE_5 {
+    background-position: -4374px -0;
+}
+
+.card--BLUE_2 {
+    background-position: -4455px -0;
+}
+
+.card--BLUE_4 {
+    background-position: -4536px -0;
+}
+
+.card--Joker_0 {
+    background-position: -4617px -0;
+}
+
+.card--GREEN_11 {
+    background-position: -4698px -0;
+}
+
+.card--BLUE_8 {
+    background-position: -4779px -0;
+}
+
+.card--GREEN_10 {
+    background-position: -4860px -0;
 }

@@ -3,10 +3,16 @@ import { Color, GameState, PlayerState } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import ScoreBoard from '../Scoreboard';
 import { AskTrump } from './AskTrump';
-import { colors } from './Card';
 import Cards from './Cards';
 import Guess from './Guess';
 import './ingame.css';
+
+export const colors = {
+	[Color.RED]: '#e16c6c',
+	[Color.GREEN]: '#70bd56',
+	[Color.BLUE]: '#6c91d9',
+	[Color.YELLOW]: '#fcda49',
+};
 
 interface IInGameProps {
 	playerState: PlayerState,

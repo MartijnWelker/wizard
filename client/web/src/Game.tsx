@@ -53,13 +53,7 @@ function Game (props: IGameProps) {
 					});
 			}
 		},
-		[
-			path,
-			history,
-			debugMode,
-			gameConnection,
-			client,
-		],
+		[],
 	);
 
 	if (
@@ -132,7 +126,7 @@ async function initConnection (
 	debugMode: boolean,
 	client: HathoraClient,
 ): Promise<void> {
-	const storedUserData = sessionStorage.getItem('user');
+	const storedUserData = localStorage.getItem('user');
 
 	if (!storedUserData) {
 		history.replace(
