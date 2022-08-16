@@ -266,8 +266,12 @@
         min-height: 300px;
     }
 
+    .ingame__score-board-container {
+        justify-content: center;
+    }
+
     .ingame__score-board-button {
-        display: none;
+        display: none !important;
     }
 
     .ingame__score-board {
