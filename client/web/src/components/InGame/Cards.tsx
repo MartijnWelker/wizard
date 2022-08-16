@@ -11,6 +11,7 @@ interface ICardsProps {
 	sort?: boolean,
 	showName?: boolean
 	highlight?: CardType,
+	rotate?: boolean,
 }
 
 interface ICardsState {
@@ -84,9 +85,12 @@ export default class Cards
 		}
 
 		return (
-			<ul className={'cards__cards-list'}>
+			<div className={'cards__cards-list'}>
 				{cards.map(
-					_card => {
+					(
+						_card,
+						index,
+					) => {
 						let card: CardType;
 						const isPlayedCard = this.isPlayedCard(_card);
 
@@ -96,29 +100,45 @@ export default class Cards
 							card = _card;
 						}
 
-						return <li
-							key={this.getCardHash(card)}>
+						let classes = [
+							'cards__card-button',
+						];
 
-							<button
-								className={`cards__card-button ${active ? 'cards__card-button--active' : ''}`}
-								onClick={() => {
-									this.playCard(card);
-								}}>
+						if (active) {
+							classes.push(
+								'cards__card-button--active',
+							);
+						}
 
-								<Card
-									card={card}
-									highlight={this.isHighlighted(card)}/>
+						if (this.props.rotate) {
+							classes.push(
+								'cards__card-button--rotated',
+							);
+						}
 
-								{this.props.showName && isPlayedCard && (
-									<span className="label cards__player-name">
-										{_card.nickname}
-									</span>
-								)}
-							</button>
-						</li>;
+						return <button
+							className={classes.join(' ')}
+							key={this.getCardHash(card)}
+							onClick={() => {
+								this.playCard(card);
+							}}
+							style={{
+								transform: this.props.rotate ? `rotate(${index * 60}deg)` : '',
+							}}>
+
+							<Card
+								card={card}
+								highlight={this.isHighlighted(card)}/>
+
+							{this.props.showName && isPlayedCard && (
+								<span className="label cards__player-name">
+									{_card.nickname}
+								</span>
+							)}
+						</button>;
 					},
 				)}
-			</ul>
+			</div>
 		);
 	}
 

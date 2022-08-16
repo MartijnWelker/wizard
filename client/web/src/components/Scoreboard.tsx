@@ -21,6 +21,36 @@ export default class ScoreBoard
 			playerState,
 		);
 
+		const scoreRows = [];
+
+		for (let i = 0; i < 20; i++) {
+			const points = playerState.pointsPerRound[i] ?? [];
+
+			scoreRows.push(
+				<tr
+					className={'score-board__score-row'}
+					key={`points-${i}`}>
+
+					<td className={'score-board__round-number'}>
+						{i + 1}
+					</td>
+					{
+						playerState.players.map(
+							(
+								player,
+								index,
+							) => <td
+								key={`points-${i}-${player.nickname}`}
+								className={'score-board__score-cell'}>
+
+								{points[index]?.points ?? ''}
+							</td>,
+						)
+					}
+				</tr>,
+			);
+		}
+
 		return (
 			<div className="score-board">
 				<p className="label">
@@ -37,37 +67,9 @@ export default class ScoreBoard
 					</tr>
 					</thead>
 					<tbody>
-					{playerState.pointsPerRound.length === 0 && (
-						<tr>
-							<td colSpan={1 + playerState.hand.length}>
-								No scores yet
-							</td>
-						</tr>
-					)}
 
-					{playerState.pointsPerRound.map(
-						(
-							points,
-							roundIndex,
-						) => <tr
-							className={'score-board__score-row'}
-							key={`points-${roundIndex}`}>
+					{scoreRows}
 
-							<td className={'score-board__round-number'}>
-								{roundIndex + 1}
-							</td>
-							{
-								points.map(
-									_points => <td
-										key={`points-${roundIndex}-${_points.nickname}`}
-										className={'score-board__score-cell'}>
-
-										{_points.points}
-									</td>,
-								)
-							}
-						</tr>,
-					)}
 					<tr>
 						<td></td>
 						{totals.map(

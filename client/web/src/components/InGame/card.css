@@ -1,9 +1,14 @@
 .card {
     border-radius: 6px;
     width: 80px;
-    height: 125px;
+    height: 124px;
     border-radius: 12px;
     background: url('../../../public/css_sprites.png');
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12),
+    0 2px 2px rgba(0, 0, 0, 0.12),
+    0 4px 4px rgba(0, 0, 0, 0.12),
+    0 8px 8px rgba(0, 0, 0, 0.12),
+    0 16px 16px rgba(0, 0, 0, 0.12);
 }
 
 .card--highlight {
@@ -34,7 +39,7 @@
     background-position: -162px -0;
 }
 
-.card--Wizard_3 {
+.card--WIZARD_3 {
     background-position: -243px -0;
 }
 
@@ -42,7 +47,7 @@
     background-position: -324px -0;
 }
 
-.card--Wizard_0 {
+.card--WIZARD_0 {
     background-position: -405px -0;
 }
 
@@ -78,7 +83,7 @@
     background-position: -1053px -0;
 }
 
-.card--WIzard_1 {
+.card--WIZARD_1 {
     background-position: -1134px -0;
 }
 
@@ -110,7 +115,7 @@
     background-position: -1701px -0;
 }
 
-.card--Joker_2 {
+.card--JOKER_2 {
     background-position: -1782px -0;
 }
 
@@ -158,7 +163,7 @@
     background-position: -2673px -0;
 }
 
-.card--Joker_3 {
+.card--JOKER_3 {
     background-position: -2754px -0;
 }
 
@@ -190,7 +195,7 @@
     background-position: -3321px -0;
 }
 
-.card--Joker_1 {
+.card--JOKER_1 {
     background-position: -3402px -0;
 }
 
@@ -198,7 +203,7 @@
     background-position: -3483px -0;
 }
 
-.card--Wizard_2 {
+.card--WIZARD_2 {
     background-position: -3564px -0;
 }
 
@@ -250,7 +255,7 @@
     background-position: -4536px -0;
 }
 
-.card--Joker_0 {
+.card--JOKER_0 {
     background-position: -4617px -0;
 }
 

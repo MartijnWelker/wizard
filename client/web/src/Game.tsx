@@ -102,7 +102,9 @@ function Game (props: IGameProps) {
 		);
 	} else {
 		return (
-			<div></div>
+			<span className="label">
+				Loading... You might need to refresh
+			</span>
 		);
 	}
 }

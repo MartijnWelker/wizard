@@ -242,7 +242,7 @@ export class Impl
 					return false;
 				}
 
-				if (request.card.specialType) {
+				if (request.card.specialType !== undefined) {
 					return card.specialType !== undefined
 						&& card.specialType === request.card.specialType;
 				}
@@ -445,7 +445,7 @@ export class Impl
 					`comparing ${formatCard(_card)} to ${formatCard(state.playedCards[0].card)}`,
 				);
 
-				if (_card.specialType) {
+				if (_card.specialType !== undefined) {
 					card = _card;
 
 					break;
@@ -526,6 +526,7 @@ export class Impl
 					nickname: state.nicknames.get(
 						hand.userId,
 					) ?? 'No nickname',
+					cardCount: hand.cards.length,
 				}),
 			),
 			// Who's turn it is

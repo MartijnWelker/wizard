@@ -31,7 +31,7 @@ function getCardClass (
 ): string {
 	let extension: string;
 
-	if (card.specialType) {
+	if (card.specialType !== undefined) {
 		extension = `${SpecialType[card.specialType]}_${card.value}`;
 	} else {
 		extension = `${Color[card.color!]}_${card.value}`;

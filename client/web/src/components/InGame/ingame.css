@@ -1,10 +1,6 @@
 .ingame {
     height: 100%;
     width: 100%;
-
-    display: grid;
-    grid-template-columns: 1fr min-content;
-    grid-gap: 32px;
 }
 
 @media (max-width: 1024px) {
@@ -15,19 +11,48 @@
 
 
 .ingame__container {
+    height: 100%;
     display: grid;
     grid-template:
-        "spectator spectator"
-        "header header"
-        "trump trump"
-        "played played" 1fr
-        "guess guess" 1fr
-        "hand hand"
-        "player player"
-        "autoplay autoplay"
-        / 1fr 1fr;
-    grid-column-gap: 32px;
-    grid-row-gap: 16px;
+        "trump player4 scoreboard" 1fr
+        "player3 cards player5" 1fr
+        "player2 you player6" 1fr
+        / 1fr 1fr 1fr;
+}
+
+.ingame__player--2 {
+    grid-area: player2;
+    justify-self: left;
+    text-align: left;
+}
+
+.ingame__player--3 {
+    grid-area: player3;
+    justify-self: left;
+    text-align: left;
+}
+
+.ingame__player--4 {
+    grid-area: player4;
+    justify-self: center;
+    text-align: center;
+}
+
+.ingame__player--5 {
+    grid-area: player5;
+    justify-self: flex-end;
+    text-align: right;
+}
+
+.ingame__player--6 {
+    grid-area: player6;
+    justify-self: flex-end;
+    text-align: right;
+}
+
+.ingame__player-nickname {
+    display: inline-block;
+    margin-top: 8px;
 }
 
 .ingame__spectator-warning {
@@ -97,31 +122,45 @@
     align-items: flex-start;
 }
 
-.ingame__trump-card .label {
+.ingame__trump-card-card-label {
+    display: inline-block;
     white-space: nowrap;
+    margin-bottom: 16px;
 }
 
 .ingame__trump-color {
-    margin-top: 16px;
-    color: white;
-    text-shadow: 1px 1px black;
-    border: 1px solid black;
+    white-space: nowrap;
 }
 
 .ingame__played-cards {
-    grid-area: played;
+    grid-area: cards;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
 }
 
+.ingame__played-cards-list {
+    transform: translateY(50%);
+}
+
 .ingame__your-cards {
-    grid-area: hand;
+    grid-area: you;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
     text-align: center;
+    z-index: 3;
+}
+
+.ingame__your-cards .cards__cards-list {
+    /* Move 1.5 card to center */
+    margin-left: -60px;
+}
+
+.ingame__your-cards-label {
+    margin-bottom: 16px;
 }
 
 .ingame__current-player {
@@ -153,16 +192,87 @@
 }
 
 .ingame__score-board-container {
+    grid-area: scoreboard;
     display: flex;
     justify-content: flex-end;
     align-items: flex-start;
     position: relative;
 }
 
+.ingame__score-board {
+    display: none;
+    position: absolute;
+    top: 48px;
+    right: 0;
+}
+
+.ingame__score-board-button:hover + .ingame__score-board {
+    display: block;
+}
+
+.ingame__trump-card-color .label {
+    white-space: nowrap;
+}
+
+.ingame__trump-card-color-label {
+    font-weight: bold;
+}
+
+.ingame__modal::before {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    content: '';
+    background: rgba(0, 0, 0, .6);
+    z-index: -1;
+}
+
+.ingame__modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    z-index: 2;
+}
+
 @media (max-width: 1024px) {
     .ingame__score-board-container {
         justify-self: center;
         margin-top: 32px;
+    }
+
+    .ingame__container {
+        grid-template:
+            "trump"
+            "cards"
+            "you"
+            "scoreboard"
+            / 1fr;
+
+        grid-row-gap: 32px;
+    }
+
+    .ingame__player {
+        display: none;
+    }
+
+    .ingame__played-cards {
+        min-height: 300px;
+    }
+
+    .ingame__score-board-button {
+        display: none;
+    }
+
+    .ingame__score-board {
+        display: block;
+        position: relative;
     }
 }
 

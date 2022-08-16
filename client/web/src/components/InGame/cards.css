@@ -8,15 +8,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: transform 0.25s linear;
+    transform-origin: top center;
 }
 
 .cards__player-name {
-    margin-top: 4px;
+    display: inline-block;
+    margin-top: 8px;
 }
 
 .cards__card-button--active:hover {
     cursor: pointer;
-    opacity: 0.8;
+    transform: translateY(-25px);
 }
 
 .cards__cards-list {
@@ -26,5 +29,13 @@
     gap: 8px;
     padding: 0;
     margin: 0;
-    margin-top: 8px;
+}
+
+.cards__card-button {
+    margin-right: -60px;
+}
+
+.cards__card-button--rotated {
+    /* overlay the cards */
+    margin-right: -87px;
 }

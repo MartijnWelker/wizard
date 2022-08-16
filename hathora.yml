@@ -23,6 +23,7 @@ types:
   Player:
     id: UserId
     nickname: Nickname
+    cardCount: int
   RoundPoints:
     nickname: Nickname
     points: int

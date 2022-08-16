@@ -3,11 +3,12 @@
     border: 3px solid black;
     border-collapse: collapse;
     background: white;
+    font-size: 12px;
 }
 
 .score-board th,
 .score-board td {
-    padding: 4px 8px;
+    padding: 2px 8px;
     overflow: hidden;
     text-overflow: clip;
     white-space: nowrap;
@@ -18,7 +19,7 @@
     font-size: 0.8rem;
     font-style: italic;
     border-right: 1px solid black;
-    padding: 4px 8px;
+    padding: 2px 8px;
 }
 
 .score-board__score-row:nth-of-type(even) .score-board__score-cell {
