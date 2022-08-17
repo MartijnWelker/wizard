@@ -73,10 +73,12 @@
 
 .ingame__guesses-container {
     position: relative;
+    margin-right: 16px;
 }
 
+.ingame--low-players .ingame__guess-list,
 .ingame__header-total-guessed:hover + .ingame__guess-list {
-    display: block;
+    display: flex;
 }
 
 .ingame__guess-list {
@@ -84,6 +86,17 @@
     position: absolute;
     top: 16px;
     left: 0;
+    padding: 0;
+    width: 100%;
+    flex-direction: column;
+}
+
+.ingame__header-guess {
+    list-style: none;
+}
+
+.ingame__header-guess + .ingame__header-guess {
+    margin-top: 8px;
 }
 
 .ingame__trump-card {
@@ -123,11 +136,6 @@
     justify-content: flex-end;
     text-align: center;
     z-index: 3;
-}
-
-.ingame__your-cards .cards__cards-list {
-    /* Move 1.5 card to center */
-    margin-left: -60px;
 }
 
 .ingame__your-cards-label {
@@ -170,12 +178,14 @@
     position: relative;
 }
 
-.ingame__score-board-container--always-visible .ingame__score-board-button {
+.ingame--low-players .ingame__score-board-button {
     display: none !important;
 }
 
-.ingame__score-board-container--always-visible .ingame__score-board {
+.ingame--low-players .ingame__score-board {
     display: block;
+    position: relative;
+    top: 0;
 }
 
 .ingame__score-board {
@@ -187,6 +197,10 @@
 
 .ingame__score-board-button:hover + .ingame__score-board {
     display: block;
+}
+
+.ingame__round-container {
+    margin-right: 16px;
 }
 
 .ingame__trump-card-color .label {
@@ -224,6 +238,8 @@
     .ingame__score-board-container {
         justify-self: center;
         margin-top: 32px;
+        flex-direction: column;
+        row-gap: 16px;
     }
 
     .ingame__container {
@@ -272,22 +288,20 @@
         / 1fr;
     }
 
-    .ingame__header-guesses {
-        margin-top: 4px;
-        align-items: flex-start;
-    }
-
     .ingame__guess-list {
         display: flex;
+        position: relative;
         flex-direction: row;
         gap: 8px;
         white-space: nowrap;
         flex-wrap: wrap;
     }
 
-    .ingame__guess-list .ingame__header-guess {
-        display: inline-block;
-        width: auto;
+    .ingame__header-guess {
+        width: auto !important;
+    }
+
+    .ingame__header-guess + .ingame__header-guess {
         margin: 0;
     }
 

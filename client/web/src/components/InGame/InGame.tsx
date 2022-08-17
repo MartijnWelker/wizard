@@ -62,7 +62,13 @@ export default class InGame
 		);
 
 		return (
-			<div className={'ingame'}>
+			<div
+				className={`ingame ${
+					playerState.players.length <= 3
+						? 'ingame--low-players'
+						: ''
+				}`}>
+
 				<div className="ingame__container">
 					{!currentPlayerInfo && (
 						<div className="label ingame__spectator-warning">
@@ -159,14 +165,8 @@ export default class InGame
 						</div>
 					)}
 
-					<div
-						className={`ingame__score-board-container ${
-							playerState.players.length <= 3
-								? 'ingame__score-board-container--always-visible'
-								: ''
-						}`}>
-
-						<div className={'ingame__header-round'}>
+					<div className={`ingame__score-board-container`}>
+						<div className={'ingame__round-container'}>
 							<span className="label">
 								Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}
 							</span>
@@ -191,9 +191,9 @@ export default class InGame
 							</ul>
 						</div>
 
-						<div className="ingame__score-board-button label">
+						<span className="ingame__score-board-button label">
 							Hover for scores
-						</div>
+						</span>
 
 						<div className="ingame__score-board">
 							<ScoreBoard
