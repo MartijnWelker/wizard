@@ -35,6 +35,10 @@
     margin-right: -60px;
 }
 
+.cards__card-button:last-of-type {
+    margin-right: 0;
+}
+
 .cards__card-button--rotated {
     /* overlay the cards */
     margin-right: -87px;

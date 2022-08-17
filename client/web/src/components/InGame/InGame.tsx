@@ -70,72 +70,47 @@ export default class InGame
 						</div>
 					)}
 
-					{/*<div className={'ingame__header'}>*/}
-					{/*	<div className={'ingame__header-round'}>*/}
-					{/*		<span className="label">*/}
-					{/*			Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}*/}
-					{/*		</span>*/}
-					{/*	</div>*/}
-					{/*	<div className={'ingame__header-guesses'}>*/}
-					{/*		<span className="label">*/}
-					{/*			Total guessed: {this.getTotalGuessed(playerState.guesses)}/{playerState.round}*/}
-					{/*		</span>*/}
-					{/*		<br/>*/}
-					{/*		<ul className={'ingame__guess-list'}>*/}
-					{/*			{playerState.guesses.map(*/}
-					{/*				guess => <li*/}
-					{/*					key={`guess-${guess.nickname}`}*/}
-					{/*					className={*/}
-					{/*						guess.nickname === currentPlayerInfo?.nickname*/}
-					{/*							? 'ingame__header-guess label ingame__header-guess--current-player'*/}
-					{/*							: 'ingame__header-guess label'*/}
-					{/*					}>*/}
+					<div className={'ingame__stats-container'}>
+						<div className={'ingame__trump-card-container'}>
+							{playerState.trump !== undefined
+								? (
+									<>
+										<div className="ingame__trump-card-card">
+											<span className="label ingame__trump-card-card-label">
+												Trump card:
+											</span>
 
-					{/*					{guess.nickname}: {guess.guess} {currentPlayerInfo && guess.nickname === currentPlayerInfo.nickname && ('(you)')}*/}
-					{/*				</li>,*/}
-					{/*			)}*/}
-					{/*		</ul>*/}
-					{/*	</div>*/}
-					{/*</div>*/}
+											<Cards
+												active={false}
+												client={client}
+												cards={[playerState.trump.card!]}/>
+										</div>
 
-					<div className={'ingame__trump-card-container'}>
-						{playerState.trump !== undefined
-							? (
-								<div className={'ingame__trump-card'}>
-									<div className="ingame__trump-card-card">
-										<span className="label ingame__trump-card-card-label">
-											Trump card:
-										</span>
-
-										<Cards
-											active={false}
-											client={client}
-											cards={[playerState.trump.card!]}/>
-									</div>
-
-									{
-										playerState.trump.card &&
-										playerState.trump.trumpColor !== undefined
-											? playerState.trump.card.specialType !== undefined && (
-											<div className="ingame__trump-card-color">
-												<span className="label">
-													Trump color: <span className="ingame__trump-card-color-label">{Color[playerState.trump.trumpColor]}</span>
-												</span>
-											</div>
-										)
-											: (
-												<span className="label ingame__trump-color">
-													No trump color this round
-												</span>
-											)}
-								</div>
-							)
-							: (
-								<span className="label">
-									No trump card this round
-								</span>
-							)
-						}
+										{
+											playerState.trump.card &&
+											playerState.trump.trumpColor !== undefined
+												? playerState.trump.card.specialType !== undefined && (
+												<div className="ingame__trump-card-color">
+													<span className="label">
+														Trump color: <span className="ingame__trump-card-color-label">{Color[playerState.trump.trumpColor]}</span>
+													</span>
+												</div>
+											)
+												: (
+													<span className="label ingame__trump-color">
+														No trump color this round
+													</span>
+												)
+										}
+									</>
+								)
+								: (
+									<span className="label">
+										No trump card this round
+									</span>
+								)
+							}
+						</div>
 					</div>
 
 					{playerState.playedCards.length > 0 && (
@@ -184,7 +159,38 @@ export default class InGame
 						</div>
 					)}
 
-					<div className={'ingame__score-board-container'}>
+					<div
+						className={`ingame__score-board-container ${
+							playerState.players.length <= 3
+								? 'ingame__score-board-container--always-visible'
+								: ''
+						}`}>
+
+						<div className={'ingame__header-round'}>
+							<span className="label">
+								Round: {playerState.round}/{this.getTotalRounds(playerState.players.length)}
+							</span>
+						</div>
+						<div className={'ingame__guesses-container'}>
+							<span className="label ingame__header-total-guessed">
+								Total guessed: {this.getTotalGuessed(playerState.guesses)}/{playerState.round}
+							</span>
+							<ul className={'ingame__guess-list'}>
+								{playerState.guesses.map(
+									guess => <li
+										key={`guess-${guess.nickname}`}
+										className={
+											guess.nickname === currentPlayerInfo?.nickname
+												? 'ingame__header-guess label ingame__header-guess--current-player'
+												: 'ingame__header-guess label'
+										}>
+
+										{guess.nickname}: {guess.guess} {currentPlayerInfo && guess.nickname === currentPlayerInfo.nickname && ('(you)')}
+									</li>,
+								)}
+							</ul>
+						</div>
+
 						<div className="ingame__score-board-button label">
 							Hover for scores
 						</div>

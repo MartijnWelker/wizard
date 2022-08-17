@@ -45,11 +45,16 @@ function Game (props: IGameProps) {
 					client,
 				)
 					.catch((e) => {
+						// history.replace(
+						// 	'/',
+						// );
+
+						// alert(
+						// 	'Fatal error: Could not connect',
+						// );
 						console.error(
-							'Error connecting',
 							e,
 						);
-						setIs404(true);
 					});
 			}
 		},

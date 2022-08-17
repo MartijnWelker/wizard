@@ -123,7 +123,7 @@ export default class Cards
 								this.playCard(card);
 							}}
 							style={{
-								transform: this.props.rotate ? `rotate(${index * 60}deg)` : '',
+								transform: this.props.rotate ? `rotate(${index * 60}deg) translateY(15px)` : '',
 							}}>
 
 							<Card

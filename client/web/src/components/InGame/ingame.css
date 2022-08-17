@@ -14,7 +14,7 @@
     height: 100%;
     display: grid;
     grid-template:
-        "trump player4 scoreboard" 1fr
+        "stats player4 scoreboard" 1fr
         "player3 cards player5" 1fr
         "player2 you player6" 1fr
         / 1fr 1fr 1fr;
@@ -63,56 +63,27 @@
 }
 
 .ingame__autoplay-button {
-    grid-area: autoplay;
-    margin: 16px auto 0;
+    z-index: 9999;
 }
 
-.ingame__header {
-    grid-area: header;
-    display: grid;
-    grid-template:
-        "round guess"
-        / 1fr 1fr;
-
-    margin-bottom: 16px;
-}
-
-.ingame__header-round {
-    grid-area: round;
-}
-
-.ingame__header-guesses {
-    grid-area: guess;
+.ingame__stats-container {
+    grid-area: stats;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+}
+
+.ingame__guesses-container {
+    position: relative;
+}
+
+.ingame__header-total-guessed:hover + .ingame__guess-list {
+    display: block;
 }
 
 .ingame__guess-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.ingame__header-guess {
-    text-align: right;
-}
-
-.ingame__header-guess + .ingame__header-guess {
-    margin-top: 4px;
-}
-
-.ingame__header-guess--current-player {
-    font-weight: bold;
-    text-decoration: underline;
-}
-
-.ingame__header-player {
-    grid-area: player;
-}
-
-.ingame__trump-card-container {
-    grid-area: trump;
+    display: none;
+    position: absolute;
+    top: 16px;
+    left: 0;
 }
 
 .ingame__trump-card {
@@ -197,6 +168,14 @@
     justify-content: flex-end;
     align-items: flex-start;
     position: relative;
+}
+
+.ingame__score-board-container--always-visible .ingame__score-board-button {
+    display: none !important;
+}
+
+.ingame__score-board-container--always-visible .ingame__score-board {
+    display: block;
 }
 
 .ingame__score-board {
