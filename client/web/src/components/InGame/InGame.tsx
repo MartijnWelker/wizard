@@ -29,30 +29,33 @@ export default class InGame
 		// There's no current player when you're spectating
 		let currentPlayerInfo: Player | undefined = undefined;
 		let activePlayerInfo!: Player;
+		let currentPlayerIndex: number = 0;
 		let otherPlayers: Player[] = [];
 
-		for (const player of playerState.players) {
+		for (let i = 0; i < playerState.players.length; i++) {
+			const player = playerState.players[i];
+
 			if (player.nickname === playerState.nickname) {
 				currentPlayerInfo = player;
-			} else {
-				otherPlayers.push(
-					player,
-				);
+				currentPlayerIndex = i;
 			}
+		}
+
+		for (let i = 0; i < playerState.players.length; i++) {
+			const player = playerState.players[(i + currentPlayerIndex) % playerState.players.length];
 
 			if (player.id === playerState.turn) {
 				activePlayerInfo = player;
 			}
-		}
 
-		playerState.guesses.sort(
-			(
-				a,
-				b,
-			) => a.nickname.localeCompare(
-				b.nickname,
-			),
-		);
+			if (currentPlayerInfo && player.id === currentPlayerInfo.id) {
+				continue;
+			}
+
+			otherPlayers.push(
+				player,
+			);
+		}
 
 		const isYourTurn = currentPlayerInfo !== undefined && activePlayerInfo.id === currentPlayerInfo.id;
 		const canPlay = playerState.gameState === GameState.PLAY && isYourTurn;
