@@ -56,7 +56,20 @@ export default function Title (
 			</div>
 			<div className="title__container">
 				{!token && (
-					<div className="ui-card lobby__join-card">
+					<form
+						className="ui-card lobby__join-card"
+						onSubmit={(e) => {
+							e.preventDefault();
+							
+							if (nickname.trim()) {
+								generateToken(
+									props.client,
+									setToken,
+									nickname.trim(),
+								);
+							}
+						}}>
+
 						<label htmlFor="nicknameInput">
 							Nickname:
 						</label>
@@ -71,19 +84,11 @@ export default function Title (
 
 						<button
 							className="button lobby__game-join-button"
-							onClick={() => {
-								if (nickname.trim()) {
-									generateToken(
-										props.client,
-										setToken,
-										nickname.trim(),
-									);
-								}
-							}}>
+							type="submit">
 
 							Set nickname
 						</button>
-					</div>
+					</form>
 				)}
 
 				{token && (
@@ -91,6 +96,13 @@ export default function Title (
 						{userData && (
 							<div className="ui-card ui-card--no-height">
 								Logged in as {userData.name}
+
+								<button
+									className="button title__join-game-button"
+									onClick={() => resetToken(setToken)}>
+
+									Change user
+								</button>
 							</div>
 						)}
 
@@ -123,7 +135,6 @@ export default function Title (
 							<input
 								type="text"
 								id="gameIdInput"
-								className="hive-input-btn-input"
 								value={gameId}
 								onChange={(e) => setGameId(e.target.value.toLowerCase())}
 							/>
@@ -159,4 +170,14 @@ async function generateToken (
 	setToken(
 		token,
 	);
+}
+
+function resetToken (
+	setToken: (token: string) => void,
+): void {
+	localStorage.removeItem(
+		'user',
+	);
+
+	setToken('');
 }
