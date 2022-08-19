@@ -63,8 +63,16 @@
     margin-top: 8px;
 }
 
+.ingame__your-cards--can-play .ingame__your-cards-label,
+.ingame__player--active .ingame__player-nickname {
+    outline: 2px solid red;
+}
+
 .ingame__spectator-warning {
-    grid-area: spectator;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
     font-weight: bold;
     text-align: center;
     color: red;

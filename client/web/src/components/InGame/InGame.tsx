@@ -137,21 +137,29 @@ export default class InGame
 						(
 							otherPlayer,
 							index,
-						) => <div
-							key={'player-' + index}
-							className={`ingame__player ingame__player--${index + 2}`}>
+						) => {
+							let extraClasses = '';
 
-							<ClosedCards
-								count={otherPlayer.cardCount}/>
+							if (otherPlayer.id === activePlayerInfo.id) {
+								extraClasses += ' ingame__player--active ';
+							}
 
-							<span className="label ingame__player-nickname">
-								{otherPlayer.nickname}
-							</span>
-						</div>,
+							return <div
+								key={'player-' + index}
+								className={`ingame__player ingame__player--${index + 2} ${extraClasses}`}>
+
+								<ClosedCards
+									count={otherPlayer.cardCount}/>
+
+								<span className="label ingame__player-nickname">
+									{otherPlayer.nickname}
+								</span>
+							</div>;
+						},
 					)}
 
 					{playerState.hand.length > 0 && (
-						<div className={'ingame__your-cards'}>
+						<div className={`ingame__your-cards ${canPlay ? 'ingame__your-cards--can-play' : ''}`}>
 							<span className="label ingame__your-cards-label">
 								Your cards: {canPlay && (<span>(tap to play)</span>)}
 							</span>
