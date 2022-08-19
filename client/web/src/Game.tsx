@@ -26,7 +26,6 @@ function Game (props: IGameProps) {
 
 	const [playerState, setPlayerState] = useState<PlayerState | undefined>(undefined);
 	const [gameConnection, setGameConnection] = useState<HathoraConnection | undefined>(undefined);
-	const [is404, setIs404] = useState<boolean>(false);
 	const [token, setToken] = useState('');
 
 	const path = useLocation().pathname;
@@ -65,7 +64,6 @@ function Game (props: IGameProps) {
 		token
 		&& playerState
 		&& gameConnection
-		&& !is404
 		&& path !== '/game'
 	) {
 		const user: UserData = HathoraClient.getUserFromToken(
@@ -98,12 +96,6 @@ function Game (props: IGameProps) {
 					)}
 				</div>
 			</>
-		);
-	} else if (is404) {
-		return (
-			<div className="background">
-				<span className="fourOhFour">Game with this Game Code does not exist</span>
-			</div>
 		);
 	} else {
 		return (
@@ -147,32 +139,20 @@ async function initConnection (
 
 	setToken(token);
 
-	// If we don't pass a gameId we start a new game
-	if (path === '/game') {
-		const stateId = await client.create(
-			token,
-			{},
-		);
+	const stateId = path
+		.split('/')
+		.pop()!;
 
-		history.replace(
-			`/game/${stateId}?debugMode=${debugMode}`,
-		);
-	} else {
-		const stateId = path
-			.split('/')
-			.pop()!;
+	const connection = await client.connect(
+		token,
+		stateId,
+		({state}) => onStateChange(state),
+		console.error,
+	);
 
-		const connection = client.connect(
-			token,
-			stateId,
-			({state}) => onStateChange(state),
-			console.error,
-		);
-
-		setGameConnection(
-			await connection,
-		);
-	}
+	setGameConnection(
+		connection,
+	);
 }
 
 export default Game;

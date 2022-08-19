@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserData } from '../../../api/base';
+import { IInitializeRequest } from '../../../api/types';
 import { HathoraClient } from '../../.hathora/client';
 import './title.css';
 
@@ -60,7 +61,7 @@ export default function Title (
 						className="ui-card lobby__join-card"
 						onSubmit={(e) => {
 							e.preventDefault();
-							
+
 							if (nickname.trim()) {
 								generateToken(
 									props.client,
@@ -107,15 +108,19 @@ export default function Title (
 						)}
 
 						<div className="title__new-game-container ui-card">
-							<Link
-								to={{
-									pathname: '/game',
-									search: `?debugMode=${debugMode}`,
+							<button
+								onClick={async () => {
+									const gameId = await createGame(
+										props.client,
+										token,
+									);
+
+									window.location.href = `/game/${gameId}?debugMode=${debugMode}`;
 								}}
 								className="button">
 
 								New Game
-							</Link>
+							</button>
 
 							<label className="title__debug-mode-toggle">
 								Debug mode
@@ -150,6 +155,16 @@ export default function Title (
 				)}
 			</div>
 		</>
+	);
+}
+
+function createGame (
+	client: HathoraClient,
+	token: string,
+) {
+	return client.create(
+		token,
+		IInitializeRequest.default(),
 	);
 }
 
