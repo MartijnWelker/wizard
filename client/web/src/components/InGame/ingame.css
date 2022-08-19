@@ -58,6 +58,11 @@
     text-align: right;
 }
 
+.ingame__player-hand {
+    /* Ensures that the hands don't span too wide */
+    max-width: 80%;
+}
+
 .ingame__player-nickname {
     display: inline-block;
     margin-top: 8px;

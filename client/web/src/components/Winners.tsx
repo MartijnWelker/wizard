@@ -17,6 +17,7 @@ export default class Winners
 	extends React.Component<IWinnerProps, IWinnerState> {
 
 	public render () {
+		console.log(this.props.playerState);
 		return (
 			<>
 				<p className="label">

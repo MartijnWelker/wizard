@@ -151,8 +151,10 @@ export default class InGame
 								key={'player-' + index}
 								className={`ingame__player ingame__player--${index + 2} ${extraClasses}`}>
 
-								<ClosedCards
-									count={otherPlayer.cardCount}/>
+								<div className="ingame__player-hand">
+									<ClosedCards
+										count={otherPlayer.cardCount}/>
+								</div>
 
 								<span className="label ingame__player-nickname">
 									{otherPlayer.nickname}

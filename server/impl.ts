@@ -582,17 +582,30 @@ export class Impl
 		}[] = [];
 
 		for (const userId in state.totalPoints) {
+			const obj = {
+				id: userId,
+				points: state.totalPoints[userId],
+			};
+
 			if (
 				highestPoints.length === 0
-				|| highestPoints[0].points <= state.totalPoints[userId]
+				|| obj.points === highestPoints[0].points
 			) {
 				highestPoints.push(
-					{
-						id: userId,
-						points: state.totalPoints[userId],
-					},
+					obj,
 				);
+
+				continue;
 			}
+
+			if (obj.points < highestPoints[0].points) {
+				continue;
+			}
+
+			highestPoints.length = 0;
+			highestPoints.push(
+				obj,
+			);
 		}
 
 		return highestPoints.map(
