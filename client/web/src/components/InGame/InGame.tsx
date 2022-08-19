@@ -77,30 +77,29 @@ export default class InGame
 					)}
 
 					<div className={'ingame__stats-container'}>
-						<div className={'ingame__trump-card-container'}>
-							{playerState.trump !== undefined
-								? (
-									<>
-										<div className="ingame__trump-card-card">
-											<span className="label ingame__trump-card-card-label">
-												Trump card:
-											</span>
+						{playerState.trump !== undefined
+							? (
+								<>
+									<div className="ingame__trump-card-card">
+										<span className="label ingame__trump-card-card-label">
+											Trump card:
+										</span>
 
-											<Cards
-												active={false}
-												client={client}
-												cards={[playerState.trump.card!]}/>
-										</div>
+										<Cards
+											active={false}
+											client={client}
+											cards={[playerState.trump.card!]}/>
+									</div>
 
+									<div className="ingame__trump-card-color">
 										{
 											playerState.trump.card &&
 											playerState.trump.trumpColor !== undefined
 												? playerState.trump.card.specialType !== undefined && (
-												<div className="ingame__trump-card-color">
-													<span className="label">
-														Trump color: <span className="ingame__trump-card-color-label">{Color[playerState.trump.trumpColor]}</span>
-													</span>
-												</div>
+
+												<span className="label">
+													Trump color: <span className="ingame__trump-card-color-label">{Color[playerState.trump.trumpColor]}</span>
+												</span>
 											)
 												: (
 													<span className="label ingame__trump-color">
@@ -108,15 +107,15 @@ export default class InGame
 													</span>
 												)
 										}
-									</>
-								)
-								: (
-									<span className="label">
-										No trump card this round
-									</span>
-								)
-							}
-						</div>
+									</div>
+								</>
+							)
+							: (
+								<span className="label">
+									No trump card this round
+								</span>
+							)
+						}
 					</div>
 
 					{playerState.playedCards.length > 0 && (

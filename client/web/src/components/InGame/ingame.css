@@ -20,6 +20,14 @@
         / 1fr 1fr 1fr;
 }
 
+.ingame--low-players .ingame__container {
+    grid-template:
+        "stats player4 scoreboard" 1fr
+        "player3 cards scoreboard" 1fr
+        "player2 you scoreboard" 1fr
+        / 1fr 1fr 1fr;
+}
+
 .ingame__player--2 {
     grid-area: player2;
     justify-self: left;
@@ -201,6 +209,10 @@
 
 .ingame__round-container {
     margin-right: 16px;
+}
+
+.ingame__trump-card-color {
+    margin-left: 16px;
 }
 
 .ingame__trump-card-color .label {
