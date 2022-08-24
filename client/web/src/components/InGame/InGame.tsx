@@ -237,7 +237,7 @@ export default class InGame
 									)
 									: (
 										<div className="ui-card ui-card--no-height">
-											{currentPlayerInfo.nickname} is guessing
+											{activePlayerInfo.nickname} is guessing
 										</div>
 									)}
 							</div>
