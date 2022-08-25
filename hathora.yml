@@ -34,7 +34,7 @@ types:
     nickname: Nickname
     card: Card
   Guesses:
-    nickname: Nickname
+    userId: UserId
     guess: int
   TrumpCard:
     card: Card?
@@ -54,6 +54,7 @@ types:
     nickname: Nickname
     round: int
     highestPlayedCard: PlayedCard?
+    roomCreator: UserId?
 
 methods:
   joinGame:

@@ -17,7 +17,6 @@ export default function Lobby (
 	props: ILobbyProps,
 ) {
 	const {
-		isCreator,
 		playerState,
 	} = props;
 
@@ -30,6 +29,8 @@ export default function Lobby (
 	const isPlaying = players.some(
 		player => player.id === props.user.id,
 	);
+
+	const isCreator = playerState.roomCreator === props.user.id;
 
 	useEffect(
 		() => {
@@ -104,12 +105,12 @@ export default function Lobby (
 
 				{players.length < 3 && <h5>Waiting on more players to join the game</h5>}
 				{players.length >= 3 &&
-					(isCreator && isPlaying
+					(isCreator
 							? <h5>Press "Play!" to start the game</h5>
 							: <h5>Waiting for host to start the game!</h5>
 					)
 				}
-				{isCreator && players.length >= 3 && players.length <= 6 && isPlaying && (
+				{isCreator && players.length >= 3 && players.length <= 6 && (
 					<button
 						className="button"
 						onClick={() => playGame(props.client)}

@@ -28,6 +28,10 @@
         / 1fr 1fr 1fr;
 }
 
+.ingame__player {
+    width: 100%;
+}
+
 .ingame__player--2 {
     grid-area: player2;
     justify-self: left;
@@ -288,7 +292,11 @@
     }
 
     .ingame__score-board-container {
-        justify-content: center;
+        justify-content: flex-start;
+    }
+
+    .ingame--low-players .ingame__guess-list {
+        position: relative;
     }
 
     .ingame__score-board-button {

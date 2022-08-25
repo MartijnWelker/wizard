@@ -1,5 +1,6 @@
 import React from 'react';
-import { Color, GameState, Player, PlayerState } from '../../../../../api/types';
+import { UserData } from '../../../../../api/base';
+import { Color, GameState, Player, PlayerState, UserId } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import ScoreBoard from '../Scoreboard';
 import { AskTrump } from './AskTrump';
@@ -12,6 +13,7 @@ interface IInGameProps {
 	playerState: PlayerState,
 	client: HathoraConnection,
 	debugMode: boolean,
+	user: UserData,
 }
 
 interface IInGameState {
@@ -24,6 +26,7 @@ export default class InGame
 		const {
 			client,
 			playerState,
+			user,
 		} = this.props;
 
 		// There's no current player when you're spectating
@@ -32,10 +35,14 @@ export default class InGame
 		let currentPlayerIndex: number = 0;
 		let otherPlayers: Player[] = [];
 
+		const nicknameMap: Record<UserId, string> = {};
+
 		for (let i = 0; i < playerState.players.length; i++) {
 			const player = playerState.players[i];
 
-			if (player.nickname === playerState.nickname) {
+			nicknameMap[player.id] = player.nickname;
+
+			if (player.id === user.id) {
 				currentPlayerInfo = player;
 				currentPlayerIndex = i;
 			}
@@ -59,8 +66,15 @@ export default class InGame
 
 		const isYourTurn = currentPlayerInfo !== undefined && activePlayerInfo.id === currentPlayerInfo.id;
 		const canPlay = playerState.gameState === GameState.PLAY && isYourTurn;
+		const isRoomCreator = currentPlayerInfo !== undefined && playerState.roomCreator === currentPlayerInfo.id;
 
 		console.log(
+			'Current player',
+			currentPlayerInfo,
+		);
+
+		console.log(
+			'Player state',
 			playerState,
 		);
 
@@ -190,14 +204,14 @@ export default class InGame
 							<ul className={'ingame__guess-list'}>
 								{playerState.guesses.map(
 									guess => <li
-										key={`guess-${guess.nickname}`}
+										key={`guess-${guess.userId}`}
 										className={
-											guess.nickname === currentPlayerInfo?.nickname
+											guess.userId === currentPlayerInfo?.id
 												? 'ingame__header-guess label ingame__header-guess--current-player'
 												: 'ingame__header-guess label'
 										}>
 
-										{guess.nickname}: {guess.guess} {currentPlayerInfo && guess.nickname === currentPlayerInfo.nickname && ('(you)')}
+										{nicknameMap[guess.userId]}: {guess.guess} {currentPlayerInfo && guess.userId === currentPlayerInfo.id && ('(you)')}
 									</li>,
 								)}
 							</ul>
@@ -265,12 +279,14 @@ export default class InGame
 									Battle is done. Winner is <b>{playerState.highestPlayedCard?.nickname}</b>
 								</span>
 
-								<button
-									className="ingame__next-round-button button"
-									onClick={() => this.startNextRound()}>
+								{isRoomCreator && (
+									<button
+										className="ingame__next-round-button button"
+										onClick={() => this.startNextRound()}>
 
-									Next battle
-								</button>
+										Next battle
+									</button>
+								)}
 							</div>
 						</div>
 					)}
@@ -283,12 +299,14 @@ export default class InGame
 									Round is done.
 								</span>
 
-								<button
-									className="ingame__next-round-button button"
-									onClick={() => this.startNextRound()}>
+								{isRoomCreator && (
+									<button
+										className="ingame__next-round-button button"
+										onClick={() => this.startNextRound()}>
 
-									Next round
-								</button>
+										Next round
+									</button>
+								)}
 							</div>
 						</div>
 					)}

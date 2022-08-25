@@ -70,6 +70,11 @@ function Game (props: IGameProps) {
 			token,
 		);
 
+		console.log(
+			'Current user',
+			user,
+		);
+
 		return (
 			<>
 				<div className={'game__container'}>
@@ -86,7 +91,8 @@ function Game (props: IGameProps) {
 						<InGame
 							playerState={playerState}
 							client={gameConnection}
-							debugMode={debugMode}/>
+							debugMode={debugMode}
+							user={user}/>
 					)}
 
 					{playerState.gameState === GameState.WINNER && (

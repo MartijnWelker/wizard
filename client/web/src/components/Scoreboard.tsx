@@ -40,7 +40,7 @@ export default class ScoreBoard
 								player,
 								index,
 							) => <td
-								key={`points-${i}-${player.nickname}`}
+								key={`points-${i}-${player.id}`}
 								className={'score-board__score-cell'}>
 
 								{points[index]?.points ?? ''}
@@ -62,7 +62,7 @@ export default class ScoreBoard
 					<tr>
 						<td></td>
 						{playerState.players.map(
-							player => <th key={player.nickname}>{player.nickname}</th>,
+							player => <th key={player.id}>{player.nickname}</th>,
 						)}
 					</tr>
 					</thead>

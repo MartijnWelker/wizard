@@ -25,6 +25,7 @@ export type InternalState = {
 	started: boolean,
 	nicknames: Map<UserId, Nickname>;
 	highestPlayedCard: PlayedCard | undefined,
+	roomCreator?: UserId,
 };
 
 export class Impl
@@ -49,6 +50,7 @@ export class Impl
 			trump: undefined,
 			nicknames: new Map<UserId, Nickname>(),
 			highestPlayedCard: undefined,
+			roomCreator: undefined,
 		};
 	}
 
@@ -76,6 +78,10 @@ export class Impl
 			);
 		}
 
+		if (state.hands.length === 0) {
+			state.roomCreator = userId;
+		}
+
 		state.nicknames.set(
 			userId,
 			request.nickname,
@@ -85,6 +91,12 @@ export class Impl
 			userId,
 			cards: [],
 		});
+
+		console.log(
+			state.hands.map(
+				hand => `${hand.userId} - ${state.nicknames.get(hand.userId)}`,
+			),
+		);
 
 		return Response.ok();
 	}
@@ -342,6 +354,12 @@ export class Impl
 		ctx: Context,
 		request: INextRoundRequest,
 	): Response {
+		if (userId !== state.roomCreator) {
+			return Response.error(
+				'Only the room creator can go to the next round',
+			);
+		}
+
 		if (state.gameState === GameState.BATTLE_DONE) {
 			return transitionTo(
 				GameState.PLAY,
@@ -546,9 +564,7 @@ export class Impl
 				)
 				.map(
 					guess => ({
-						nickname: state.nicknames.get(
-							guess[0],
-						)!,
+						userId: guess[0],
 						guess: guess[1],
 					}),
 				),
@@ -566,6 +582,7 @@ export class Impl
 				userId,
 			) ?? 'No nickname',
 			highestPlayedCard: state.highestPlayedCard ?? undefined,
+			roomCreator: state.roomCreator,
 		};
 	}
 
