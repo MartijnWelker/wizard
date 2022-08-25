@@ -72,13 +72,10 @@
     margin-top: 8px;
 }
 
-.ingame__player--dealer .ingame__player-nickname {
-    outline: 2px solid yellow;
-}
-
-.ingame__your-cards--can-play .ingame__your-cards-label,
-.ingame__player--active .ingame__player-nickname {
-    outline: 2px solid red;
+.ingame__player-dealer-label,
+.ingame__player-currently-playing-label,
+.ingame__your-cards--can-play .ingame__your-cards-tap-to-play-label {
+    font-weight: bold;
 }
 
 .ingame__spectator-warning {
@@ -104,6 +101,7 @@
 .ingame__guesses-container {
     position: relative;
     margin-right: 16px;
+    white-space: nowrap;
 }
 
 .ingame--low-players .ingame__guess-list,
@@ -222,6 +220,7 @@
 
 .ingame__round-container {
     margin-right: 16px;
+    white-space: nowrap;
 }
 
 .ingame__trump-card-color {
@@ -247,6 +246,11 @@
     justify-content: center;
     z-index: 2;
     padding: 32px;
+    pointer-events: none;
+}
+
+.ingame__modal * {
+    pointer-events: all;
 }
 
 @media (max-width: 1024px) {

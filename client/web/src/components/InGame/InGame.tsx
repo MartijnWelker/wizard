@@ -155,19 +155,12 @@ export default class InGame
 							otherPlayer,
 							index,
 						) => {
-							let extraClasses = '';
-
-							if (otherPlayer.id === activePlayerInfo.id) {
-								extraClasses += ' ingame__player--active ';
-							}
-
-							if (otherPlayer.id === playerState.dealerUserId) {
-								extraClasses += ' ingame__player--dealer ';
-							}
+							const isDealer = otherPlayer.id === playerState.dealerUserId;
+							const isCurrentlyPlaying = otherPlayer.id === activePlayerInfo.id;
 
 							return <div
 								key={'player-' + index}
-								className={`ingame__player ingame__player--${index + 2} ${extraClasses}`}>
+								className={`ingame__player ingame__player--${index + 2}`}>
 
 								<div className="ingame__player-hand">
 									<ClosedCards
@@ -176,6 +169,14 @@ export default class InGame
 
 								<span className="label ingame__player-nickname">
 									{otherPlayer.nickname}
+
+									{isDealer && (
+										<span className="ingame__player-dealer-label"> (Dealer)</span>
+									)}
+
+									{isCurrentlyPlaying && (
+										<span className="ingame__player-currently-playing-label"> (Currently playing)</span>
+									)}
 								</span>
 							</div>;
 						},
@@ -184,14 +185,14 @@ export default class InGame
 					{playerState.hand.length > 0 && (
 						<div className={`ingame__your-cards ${canPlay ? 'ingame__your-cards--can-play' : ''}`}>
 							<span className="label ingame__your-cards-label">
-								Your cards
+								Your hand
 
 								{currentPlayerInfo && playerState.dealerUserId === currentPlayerInfo.id && (
 									<span> (You are the dealer)</span>
 								)}
 
 								{canPlay && (
-									<p>tap to play...</p>
+									<p className="ingame__your-cards-tap-to-play-label">tap to play...</p>
 								)}
 							</span>
 
