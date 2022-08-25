@@ -31,6 +31,7 @@ types:
     nickname: Nickname
     points: int
   PlayedCard:
+    userId: UserId
     nickname: Nickname
     card: Card
   Guesses:
@@ -54,7 +55,8 @@ types:
     nickname: Nickname
     round: int
     highestPlayedCard: PlayedCard?
-    roomCreator: UserId?
+    roomCreatorUserId: UserId?
+    dealerUserId: UserId?
 
 methods:
   joinGame:

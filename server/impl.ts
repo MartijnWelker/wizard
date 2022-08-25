@@ -2,30 +2,35 @@ import { Response } from '../api/base';
 import { Card, Color, GameState, IAutoPlayRequest, IInitializeRequest, IJoinGameRequest, INextRoundRequest, IPlayCardRequest, ISetTrumpColorRequest, IStartGameRequest, ISubmitGuessRequest, Nickname, PlayedCard, PlayerState, RoundPoints, TotalPoints, UserId } from '../api/types';
 import { Context, Methods } from './.hathora/methods';
 import { transitionTo } from './GameStateMachine';
-import { amountOfCards, findHand, formatCard } from './util';
+import { amountOfCards, findHand, formatCard, getNextInt } from './util';
 
 export type InternalState = {
 	deck: Card[],
+
+	dealerUserId?: UserId,
+	turnIdx: number,
+
 	hands: {
 		userId: UserId,
 		cards: Card[],
 	}[],
-	guesses: Record<UserId, number>,
 	gameState: GameState,
-	turnIdx: number,
 	round: number,
 	trump: {
 		card: Card,
 		trumpColor: Color | undefined,
 	} | undefined,
 	playedCards: PlayedCard[],
-	pointsPerRound: Record<Nickname, number>[],
-	totalPoints: Record<Nickname, number>,
-	winsThisRound: Record<Nickname, number>,
+	// todo
+	guesses: Record<UserId, number>,
+	pointsPerRound: Record<UserId, number>[],
+	totalPoints: Record<UserId, number>,
+	winsThisRound: Record<UserId, number>,
+	//
 	started: boolean,
 	nicknames: Map<UserId, Nickname>;
 	highestPlayedCard: PlayedCard | undefined,
-	roomCreator?: UserId,
+	roomCreatorUserId?: UserId,
 };
 
 export class Impl
@@ -36,21 +41,26 @@ export class Impl
 		request: IInitializeRequest,
 	): InternalState {
 		return {
-			deck: [],
-			hands: [],
-			playedCards: [],
+			// Game
+			gameState: GameState.LOBBY,
+			roomCreatorUserId: undefined,
+			started: false,
+			nicknames: new Map<UserId, Nickname>(),
+
+			// Turns
+			dealerUserId: undefined,
 			turnIdx: 0,
+
 			round: 1,
+			hands: [],
+			deck: [],
+			playedCards: [],
 			pointsPerRound: [],
 			totalPoints: {},
 			guesses: {},
-			gameState: GameState.LOBBY,
 			winsThisRound: {},
-			started: false,
 			trump: undefined,
-			nicknames: new Map<UserId, Nickname>(),
 			highestPlayedCard: undefined,
-			roomCreator: undefined,
 		};
 	}
 
@@ -79,7 +89,8 @@ export class Impl
 		}
 
 		if (state.hands.length === 0) {
-			state.roomCreator = userId;
+			state.roomCreatorUserId = userId;
+			state.dealerUserId = userId;
 		}
 
 		state.nicknames.set(
@@ -91,12 +102,6 @@ export class Impl
 			userId,
 			cards: [],
 		});
-
-		console.log(
-			state.hands.map(
-				hand => `${hand.userId} - ${state.nicknames.get(hand.userId)}`,
-			),
-		);
 
 		return Response.ok();
 	}
@@ -208,7 +213,11 @@ export class Impl
 		);
 
 		state.guesses[userId] = request.count;
-		state.turnIdx = (state.turnIdx + 1) % state.hands.length;
+
+		state.turnIdx = getNextInt(
+			state.turnIdx,
+			state.hands.length,
+		);
 
 		if (
 			!state.hands.every(
@@ -318,11 +327,15 @@ export class Impl
 					userId,
 				)!,
 				card: request.card,
+				userId: userId,
 			},
 		);
 
 		// Turns are independent of rounds because the user who wins the round gets to play
-		state.turnIdx = (state.turnIdx + 1) % state.hands.length;
+		state.turnIdx = getNextInt(
+			state.turnIdx,
+			state.hands.length,
+		);
 
 		const formattedCard = formatCard(
 			request.card,
@@ -354,7 +367,7 @@ export class Impl
 		ctx: Context,
 		request: INextRoundRequest,
 	): Response {
-		if (userId !== state.roomCreator) {
+		if (userId !== state.roomCreatorUserId) {
 			return Response.error(
 				'Only the room creator can go to the next round',
 			);
@@ -380,14 +393,6 @@ export class Impl
 					userId,
 				);
 			}
-
-			console.log(
-				'Starting next round',
-			);
-
-			state.round++;
-			// Dealer moves to the next person
-			state.turnIdx = state.round % state.hands.length;
 
 			return transitionTo(
 				GameState.GUESS,
@@ -427,7 +432,7 @@ export class Impl
 		) {
 			return this.nextRound(
 				state,
-				userId,
+				state.roomCreatorUserId!,
 				ctx,
 				{},
 			);
@@ -581,8 +586,9 @@ export class Impl
 			nickname: state.nicknames.get(
 				userId,
 			) ?? 'No nickname',
-			highestPlayedCard: state.highestPlayedCard ?? undefined,
-			roomCreator: state.roomCreator,
+			highestPlayedCard: state.highestPlayedCard,
+			roomCreatorUserId: state.roomCreatorUserId,
+			dealerUserId: state.dealerUserId,
 		};
 	}
 

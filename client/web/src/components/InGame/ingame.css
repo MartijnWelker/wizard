@@ -72,6 +72,10 @@
     margin-top: 8px;
 }
 
+.ingame__player--dealer .ingame__player-nickname {
+    outline: 2px solid yellow;
+}
+
 .ingame__your-cards--can-play .ingame__your-cards-label,
 .ingame__player--active .ingame__player-nickname {
     outline: 2px solid red;
@@ -179,17 +183,8 @@
     text-align: center;
 }
 
-.ingame__round-done,
-.ingame__guess {
-    grid-area: guess;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
 .ingame__next-round-button {
-    margin-top: 16px;
+    margin-top: auto;
 }
 
 .ingame__current-player--you {
@@ -241,17 +236,6 @@
     font-weight: bold;
 }
 
-.ingame__modal::before {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    content: '';
-    background: rgba(0, 0, 0, .6);
-    z-index: -1;
-}
-
 .ingame__modal {
     position: fixed;
     top: 0;
@@ -259,9 +243,10 @@
     width: 100%;
     height: 100%;
     display: flex;
-    align-content: center;
+    align-items: flex-start;
     justify-content: center;
     z-index: 2;
+    padding: 32px;
 }
 
 @media (max-width: 1024px) {

@@ -66,7 +66,7 @@ export default class InGame
 
 		const isYourTurn = currentPlayerInfo !== undefined && activePlayerInfo.id === currentPlayerInfo.id;
 		const canPlay = playerState.gameState === GameState.PLAY && isYourTurn;
-		const isRoomCreator = currentPlayerInfo !== undefined && playerState.roomCreator === currentPlayerInfo.id;
+		const isRoomCreator = currentPlayerInfo !== undefined && playerState.roomCreatorUserId === currentPlayerInfo.id;
 
 		console.log(
 			'Current player',
@@ -161,6 +161,10 @@ export default class InGame
 								extraClasses += ' ingame__player--active ';
 							}
 
+							if (otherPlayer.id === playerState.dealerUserId) {
+								extraClasses += ' ingame__player--dealer ';
+							}
+
 							return <div
 								key={'player-' + index}
 								className={`ingame__player ingame__player--${index + 2} ${extraClasses}`}>
@@ -180,7 +184,15 @@ export default class InGame
 					{playerState.hand.length > 0 && (
 						<div className={`ingame__your-cards ${canPlay ? 'ingame__your-cards--can-play' : ''}`}>
 							<span className="label ingame__your-cards-label">
-								Your cards: {canPlay && (<span>(tap to play)</span>)}
+								Your cards
+
+								{currentPlayerInfo && playerState.dealerUserId === currentPlayerInfo.id && (
+									<span> (You are the dealer)</span>
+								)}
+
+								{canPlay && (
+									<p>tap to play...</p>
+								)}
 							</span>
 
 							<Cards
@@ -247,7 +259,8 @@ export default class InGame
 											playerState={playerState}
 											currentPlayerInfo={currentPlayerInfo}
 											activePlayerInfo={activePlayerInfo}
-											client={client}/>
+											client={client}
+											nicknameMap={nicknameMap}/>
 									)
 									: (
 										<div className="ui-card ui-card--no-height">
@@ -271,42 +284,30 @@ export default class InGame
 						</div>
 					)}
 
-				{playerState.gameState === GameState.BATTLE_DONE &&
+				{(playerState.gameState === GameState.BATTLE_DONE || playerState.gameState === GameState.ROUND_DONE) &&
 					currentPlayerInfo && (
 						<div className="ingame__modal">
-							<div className={'ingame__round-done'}>
+							<div className={'ui-card'}>
 								<span className="label">
 									Battle is done. Winner is <b>{playerState.highestPlayedCard?.nickname}</b>
 								</span>
 
-								{isRoomCreator && (
-									<button
-										className="ingame__next-round-button button"
-										onClick={() => this.startNextRound()}>
+								{
+									isRoomCreator
+										? (
+											<button
+												className="ingame__next-round-button button"
+												onClick={() => this.startNextRound()}>
 
-										Next battle
-									</button>
-								)}
-							</div>
-						</div>
-					)}
-
-				{playerState.gameState === GameState.ROUND_DONE &&
-					currentPlayerInfo && (
-						<div className="ingame__modal">
-							<div className={'ingame__round-done'}>
-								<span className="label">
-									Round is done.
-								</span>
-
-								{isRoomCreator && (
-									<button
-										className="ingame__next-round-button button"
-										onClick={() => this.startNextRound()}>
-
-										Next round
-									</button>
-								)}
+												Next round
+											</button>
+										)
+										: (
+											<span>
+												Waiting for host...
+											</span>
+										)
+								}
 							</div>
 						</div>
 					)}

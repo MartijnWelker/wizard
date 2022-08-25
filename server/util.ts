@@ -1,6 +1,25 @@
 import { Card, Color, PlayedCard, SpecialType, UserId } from '../api/types';
 import { InternalState } from './impl';
 
+export function getNextArr<T = any> (
+	arr: T[],
+	currIndex: number,
+): T {
+	const nextIndex = getNextInt(
+		currIndex,
+		arr.length,
+	);
+
+	return arr[nextIndex];
+}
+
+export function getNextInt (
+	curr: number,
+	max: number,
+): number {
+	return (curr + 1) % max;
+}
+
 export function formatCard (
 	card: Card,
 ): string {
@@ -86,16 +105,12 @@ export function getHighestPlayedCard (
 export function countPoints (
 	state: InternalState,
 ): void {
-	const pointsThisRound: Record<UserId, number> = state.pointsPerRound[state.round - 1] = {};
+	const pointsThisRound: InternalState['pointsPerRound'][number] = state.pointsPerRound[state.round - 1] = {};
 
 	for (const hand of state.hands) {
 		const userId = hand.userId as UserId;
-		const nickname = state.nicknames.get(
-			userId,
-		)!;
-
 		const guessed = state.guesses[userId];
-		const won = state.winsThisRound[nickname] ?? 0;
+		const won = state.winsThisRound[userId] ?? 0;
 
 		if (guessed === won) {
 			const pointsDelta = 20 + (guessed * 10);

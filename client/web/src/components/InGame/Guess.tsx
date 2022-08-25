@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player, PlayerState } from '../../../../../api/types';
+import { Player, PlayerState, UserId } from '../../../../../api/types';
 import { HathoraConnection } from '../../../../.hathora/client';
 import './guess.css';
 
@@ -8,6 +8,7 @@ interface IGuessProps {
 	client: HathoraConnection,
 	currentPlayerInfo: Player,
 	activePlayerInfo: Player,
+	nicknameMap: Record<UserId, string>,
 }
 
 interface IGuessState {
@@ -27,6 +28,7 @@ export default class Guess
 		const {
 			playerState,
 			currentPlayerInfo,
+			nicknameMap,
 		} = this.props;
 
 		if (playerState.turn !== currentPlayerInfo.id) {
@@ -46,6 +48,18 @@ export default class Guess
 						</span>
 					)}
 				</h3>
+
+				{playerState.guesses.length > 0 && (
+					<ul>
+						{playerState.guesses.map(
+							guess => (
+								<li key={'guess-' + guess.userId}>
+									{nicknameMap[guess.userId]} guessed: {guess.guess}
+								</li>
+							),
+						)}
+					</ul>
+				)}
 
 				<input
 					type="number"

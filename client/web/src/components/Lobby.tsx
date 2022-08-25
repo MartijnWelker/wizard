@@ -30,7 +30,7 @@ export default function Lobby (
 		player => player.id === props.user.id,
 	);
 
-	const isCreator = playerState.roomCreator === props.user.id;
+	const isCreator = playerState.roomCreatorUserId === props.user.id;
 
 	useEffect(
 		() => {

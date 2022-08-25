@@ -2,7 +2,7 @@ import { Response } from '../api/base';
 import { GameState, SpecialType, UserId } from '../api/types';
 import { Context } from './.hathora/methods';
 import { InternalState } from './impl';
-import { countPoints, createDeck, formatCard, getHighestPlayedCard } from './util';
+import { countPoints, createDeck, formatCard, getHighestPlayedCard, getNextInt } from './util';
 
 type TransitionFn<T> = (
 	state: InternalState,
@@ -38,8 +38,15 @@ const states: Record<GameState, State> = {
 		onExit: (
 			state: InternalState,
 		) => {
-			// Played left of the dealer starts first
-			state.turnIdx = 1;
+			console.log(
+				'-------------- NEW GAME ----------------',
+			);
+
+			const dealerIndex = state.hands.findIndex(
+				hand => hand.userId === state.dealerUserId,
+			);
+
+			state.turnIdx = (dealerIndex + 1) % state.hands.length;
 		},
 	},
 	[GameState.GUESS]: {
@@ -62,11 +69,20 @@ const states: Record<GameState, State> = {
 					createDeck(),
 				);
 
-				for (let i = 0; i < state.hands.length; i++) {
-					// Every round the first hand shifts 1 position
-					const hand = state.hands[(state.turnIdx + i) % state.hands.length];
+				const dealerIndex = state.hands.findIndex(
+					hand => hand.userId === state.dealerUserId!,
+				);
 
-					for (let i = 0; i < state.round; i++) {
+				state.turnIdx = getNextInt(
+					dealerIndex,
+					state.hands.length,
+				);
+				
+				for (let i = 0; i < state.round; i++) {
+					for (let i = 0; i < state.hands.length; i++) {
+						// Always start with the hand next to the dealer
+						const hand = state.hands[(dealerIndex + 1 + i) % state.hands.length];
+
 						hand.cards.push(
 							state.deck.pop()!,
 						);
@@ -147,21 +163,21 @@ const states: Record<GameState, State> = {
 				state,
 			);
 
-			state.winsThisRound[highestPlayedCard.nickname] ??= 0;
-			state.winsThisRound[highestPlayedCard.nickname] += 1;
+			state.winsThisRound[highestPlayedCard.userId] ??= 0;
+			state.winsThisRound[highestPlayedCard.userId] += 1;
 
 			const formattedCard = formatCard(
 				highestPlayedCard.card,
 			);
 
-			const winsByUser = state.winsThisRound[highestPlayedCard.nickname];
+			const winsByUser = state.winsThisRound[highestPlayedCard.userId];
 
 			console.log(
-				`The highest played card was ${formattedCard} by user ${highestPlayedCard.nickname}. He now has ${winsByUser} wins`,
+				`The highest played card was ${formattedCard} by user ${highestPlayedCard.userId}. He now has ${winsByUser} wins`,
 			);
 
 			state.turnIdx = state.hands.findIndex(
-				hand => state.nicknames.get(hand.userId)! === highestPlayedCard.nickname,
+				hand => hand.userId === highestPlayedCard.userId,
 			) ?? 0;
 
 			state.highestPlayedCard = highestPlayedCard;
@@ -194,6 +210,21 @@ const states: Record<GameState, State> = {
 			countPoints(
 				state,
 			);
+
+			console.log(
+				'Starting next round',
+			);
+
+			state.round++;
+
+			const nextDealerIndex = getNextInt(
+				state.hands.findIndex(
+					hand => hand.userId === state.dealerUserId,
+				),
+				state.hands.length,
+			);
+
+			state.dealerUserId = state.hands[nextDealerIndex].userId;
 
 			return Response.ok();
 		},
